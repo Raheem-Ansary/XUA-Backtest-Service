@@ -1,337 +1,247 @@
-# ابزار بک‌تست طلا (XAUUSD) با Backtrader
+# XAU Backtest Web Platform
 
-این پروژه یک ابزار کامل و سرراست برای بک‌تست بازار طلاست. هدف این است که کاربر با کمترین ابهام بتواند نیازش را برطرف کند.
+Production-style full-stack backtesting platform for the XAUUSD strategy.
 
-مالک و صاحب امتیاز: **Raheem-Ansary**
+This project contains:
+- Original Backtrader strategy project: `backtrader-pullback-window-xauusd`
+- FastAPI backend service wrapper: `backend`
+- Next.js frontend dashboard: `frontend`
 
-## شروع سریع برای افراد کاملاً مبتدی
+The backend runs the original `SunriseOgle` strategy class directly and exposes async REST APIs for running and retrieving backtests.
 
-این بخش طوری نوشته شده که اگر هیچ تجربه‌ای از ترید یا برنامه‌نویسی ندارید، باز هم بتوانید ابزار را اجرا کنید.
+## Table of Contents
 
-### 1) این ابزار دقیقاً چه کاری انجام می‌دهد؟
+1. Overview
+2. Architecture
+3. Project Structure
+4. Prerequisites
+5. Backend Setup
+6. Frontend Setup
+7. Run Full Stack Locally
+8. API Reference
+9. Backtest Request Parameters
+10. Data Source
+11. Troubleshooting
+12. License
 
-بک‌تست یعنی شما «استراتژی خرید و فروش» را روی داده‌های قدیمی بازار طلا امتحان می‌کنید تا ببینید در گذشته سودآور بوده یا نه.
+## 1. Overview
 
-این ابزار:
-- یک فایل دیتای قیمت طلا (CSV) می‌گیرد
-- یک استراتژی ساده را اجرا می‌کند
-- نتیجه را به شما می‌گوید (سرمایه اولیه و نهایی)
+The platform provides:
+- Backtest execution via API (`POST /api/backtest/run`)
+- Async/background execution (server remains responsive)
+- Stored job status/results in SQLite
+- Frontend form to configure parameters dynamically
+- Dashboard with:
+  - Performance summary cards
+  - Equity curve chart
+  - Trade list table
 
-### 2) اگر هیچ دیتایی ندارید
+## 2. Architecture
 
-این پروژه یک دیتای نمونه دارد و بدون هیچ دیتای اضافی هم اجرا می‌شود.
+- Strategy engine: Backtrader (original strategy logic preserved)
+- API layer: FastAPI
+- Persistence: SQLite (`backend/database/backtests.db`)
+- Frontend: Next.js App Router
 
-### 3) نصب و اجرا (خیلی ساده)
+Execution flow:
+1. Frontend submits config to backend
+2. Backend creates backtest job ID and returns immediately
+3. Backend runs backtest in background thread
+4. Frontend polls job endpoint until completion
+5. Frontend renders result metrics/equity/trades
 
-اگر Termux دارید:
-```bash
-pkg update -y
-pkg install -y python
+## 3. Project Structure
+
+```text
+xau-back-test-web/
+├── backtrader-pullback-window-xauusd/
+│   ├── src/strategy/sunrise_ogle_xauusd.py
+│   └── data/XAUUSD_5m_5Yea.csv
+├── backend/
+│   ├── main.py
+│   ├── api/
+│   ├── services/
+│   ├── models/
+│   ├── schemas/
+│   ├── core/
+│   ├── backtest_engine/
+│   └── database/
+├── frontend/
+│   ├── app/
+│   ├── components/
+│   └── lib/api.js
+└── README.md
 ```
 
-و بعد:
+## 4. Prerequisites
+
+- Python 3.10+
+- Node.js 18+
+- npm (or yarn)
+
+## 5. Backend Setup
+
+From repository root:
+
 ```bash
-cd ~/gold_backtest
-python -m pip install --upgrade pip
+cd backend
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-حالا اجرا:
-```bash
-python run.py --data data/xauusd_sample.csv
-```
-
-اگر خروجی مثل زیر دیدید یعنی درست اجرا شده:
-```
-Starting Portfolio Value: 10000.00
-Final Portfolio Value: 10000.xx
-```
-
-### 4) اگر می‌خواهید با دیتای خودتان اجرا کنید
-
-فایل دیتای خودتان را داخل پوشه `data/` بگذارید و بعد این دستور را بزنید:
-```bash
-python run.py --data data/xauusd.csv
-```
-
-### 5) اگر دیتای شما تاریخ و ساعت دارد
-
-مثلاً تاریخ به این شکل است: `2024-01-02 14:30:00`
-
-این دستور را اجرا کنید:
-```bash
-python run.py --data data/xauusd.csv --dtformat "%Y-%m-%d %H:%M:%S"
-```
-
-### 6) اگر برنامه ارور داد چه کار کنم؟
-
-بیشتر خطاها به خاطر «فرمت اشتباه CSV» یا «کم بودن تعداد داده‌ها» است.
-
-- مطمئن شوید ستون‌ها دقیقاً این ترتیب را دارند:
-```
-Date,Open,High,Low,Close,Volume,OpenInterest
-```
-- اگر حجم و اوپن‌اینترست ندارید، مقدار `0` بگذارید.
-- اگر دیتای شما خیلی کم است، ابزار خودش دوره‌ها را کوچک می‌کند تا اجرا شود.
-
-### 7) ساده‌ترین حالت استفاده (بدون دردسر)
-
-فقط این دستور را استفاده کنید:
-```bash
-python run.py --strategy sma_cross
-```
-
-همین، کافی است.
-
-## ویژگی‌ها
-
-- اجرای آسان روی Termux
-- پشتیبانی از اکثر آپشن‌های رایج Backtrader (کمیسیون، اسلیپیج، تایم‌فریم، فشرده‌سازی، سizer و ...)
-- استراتژی‌های آماده (SMA Cross و RSI Mean Reversion)
-- خروجی آنالایزرها (بازده، دراوداون، شارپ، آمار معاملات)
-- پشتیبانی از فرمت‌های مختلف CSV با ستون‌بندی قابل تنظیم
-- حالت‌های پیشرفته: Renko و Multi-Data
-
-## نصب و اجرا روی Termux
-
-1) نصب پایتون:
-```bash
-pkg update -y
-pkg install -y python
-```
-
-2) ورود به پروژه:
-```bash
-cd ~/gold_backtest
-```
-
-3) نصب وابستگی‌ها:
-```bash
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-4) اجرای بک‌تست با دیتای نمونه:
-```bash
-python run.py --data data/xauusd_sample.csv
-```
-
-5) مشاهده همه گزینه‌ها:
-```bash
-python run.py --help
-```
-
-### نصب قابلیت رسم نمودار (Plot)
-
-اگر می‌خواهید با `--plot` نمودار ببینید، باید Matplotlib نصب شود:
-```bash
-pip install matplotlib
-```
-
-## فرمت دیتای CSV
-
-پیش‌فرض پروژه این هدر را انتظار دارد:
-```
-Date,Open,High,Low,Close,Volume,OpenInterest
-```
-
-- تاریخ: `YYYY-MM-DD`
-- اگر حجم یا اوپن‌اینترست ندارید، مقدار `0` بگذارید.
-
-نمونه:
-```
-2024-01-02,2042.10,2051.80,2036.40,2048.60,0,0
-```
-اگر دیتای شما کوتاه باشد و دوره‌های اندیکاتورها بزرگ باشند، ابزار به‌صورت خودکار دوره‌ها را کوچک می‌کند تا خطا ندهد.
-
-### اگر ستون‌هایتان ترتیب متفاوتی دارد
-
-می‌توانید اندیس ستون‌ها را با این پارامترها تنظیم کنید (اندیس از صفر شروع می‌شود):
-- `--datecol`، `--opencol`، `--highcol`، `--lowcol`، `--closecol`
-- `--volumecol`، `--openinterestcol`
-
-اگر ستونی ندارید مقدار `-1` بدهید.
-
-مثال:
-```bash
-python run.py --data data/xauusd.csv --datecol 0 --opencol 1 --highcol 2 --lowcol 3 --closecol 4 --volumecol -1 --openinterestcol -1
-```
-
-## استراتژی‌ها
-
-### 1) SMA Cross
-وقتی میانگین کوتاه از بلند بالاتر می‌رود خرید می‌کند و بالعکس خارج می‌شود.
-
-پارامترها:
-- `--fast` (پیش‌فرض 10)
-- `--slow` (پیش‌فرض 30)
-
-### 2) RSI Mean Reversion
-وقتی RSI پایین می‌رود خرید می‌کند و در محدوده بالا خارج می‌شود.
-
-پارامترها:
-- `--rsi-period` (پیش‌فرض 14)
-- `--rsi-lower` (پیش‌فرض 30)
-- `--rsi-upper` (پیش‌فرض 70)
-
-انتخاب استراتژی:
-```bash
-python run.py --strategy sma_cross
-python run.py --strategy rsi_revert
-```
-
-## کنترل ریسک و اندازه پوزیشن (Sizer)
-
-- سایز ثابت:
-```bash
-python run.py --sizer fixed --stake 1
-```
-
-- سایز درصدی از سرمایه:
-```bash
-python run.py --sizer percent --stake-percent 10
-```
-
-## کمیسیون و اسلیپیج
-
-- کمیسیون:
-```bash
-python run.py --commission 0.0002
-```
-
-- اسلیپیج ثابت:
-```bash
-python run.py --slippage-fixed 0.5
-```
-
-- اسلیپیج درصدی:
-```bash
-python run.py --slippage-perc 0.001
-```
-
-## تایم‌فریم و فشرده‌سازی
-
-مثال: دیتای دقیقه‌ای با فشرده‌سازی 5 (هر کندل = 5 دقیقه):
-```bash
-python run.py --timeframe minutes --compression 5
-```
-
-گزینه‌های `--timeframe`:
-`ticks` `seconds` `minutes` `days` `weeks` `months` `years`
-
-## محدود کردن بازه زمانی
+Run server:
 
 ```bash
-python run.py --fromdate 2024-01-01 --todate 2024-06-30
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-## آنالایزرها (خروجی آمار)
+Optional CORS override:
 
 ```bash
-python run.py --analyzers
+export BACKEND_CORS_ORIGINS="http://localhost:3000,http://127.0.0.1:3000"
 ```
 
-خروجی شامل:
-- Max Drawdown
-- Sharpe Ratio
-- Total Return و Annual Return
-- آمار معاملات
-
-## اجرای با Cheat-On-Close یا Cheat-On-Open
+Health check:
 
 ```bash
-python run.py --coc
-python run.py --coo
+curl http://localhost:8000/health
 ```
 
-## لیست همه گزینه‌ها
+## 6. Frontend Setup
 
-برای دیدن تمام آپشن‌ها:
-```bash
-python run.py --help
-```
-
-## رسم نمودار
+From repository root:
 
 ```bash
-python run.py --plot
+cd frontend
+npm install
 ```
 
-## مثال‌های آماده
-
-- بک‌تست سریع با SMA:
-```bash
-python run.py --strategy sma_cross --fast 10 --slow 30
-```
-
-- بک‌تست با RSI و اسلیپیج:
-```bash
-python run.py --strategy rsi_revert --rsi-period 14 --rsi-lower 30 --rsi-upper 70 --slippage-perc 0.001
-```
-
-- دیتای با تاریخ و ساعت:
-```bash
-python run.py --data data/xauusd.csv --dtformat "%Y-%m-%d %H:%M:%S"
-```
-
-## نمونه‌های آماده (Examples)
-
-نمونه‌های کاربردی برای بازار طلا در پوشه `examples/` هستند:
-
-1) Resample تایم‌فریم:
-```bash
-python examples/resample_gold.py --timeframe weekly --compression 1 --plot
-```
-
-2) چندتایم‌فریم + Pivot Point:
-```bash
-python examples/multi_timeframe_pivot.py --higher weekly --plot
-```
-
-3) اسلیپیج روی استراتژی SMA:
-```bash
-python examples/slippage_gold.py --slippage-perc 0.001 --plot
-```
-
-4) انواع کمیسیون:
-```bash
-python examples/commission_gold.py --commtype perc --commission 0.0002 --plot
-```
-
-5) Renko برای طلا:
-```bash
-python examples/renko_gold.py --brick 5 --plot
-```
-
-6) چند دیتافید هم‌زمان:
-```bash
-python examples/multi_data_gold.py --data ../data/xauusd_sample.csv --data2 ../data/xauusd_sample.csv --plot
-```
-
-برای جزئیات بیشتر فایل `examples/README.md` را ببینید.
-
-## استفاده از حالت Renko در run.py
+Create `frontend/.env.local`:
 
 ```bash
-python run.py --mode renko --renko-brick 5 --strategy sma_cross
+NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
-## استفاده از حالت Multi-Data در run.py
+Run frontend:
 
 ```bash
-python run.py --mode multi --data data/xauusd_sample.csv --data2 data/xauusd_sample.csv --fast 10 --slow 30
+npm run dev
 ```
 
-## لایسنس و مالکیت
+Open:
+- `http://localhost:3000`
 
-این پروژه تحت لایسنس MIT منتشر شده است.
+## 7. Run Full Stack Locally
 
-مالک و صاحب امتیاز: **Raheem-Ansary**
+1. Start backend on port `8000`
+2. Start frontend on port `3000`
+3. Go to `/run-backtest`
+4. Configure parameters
+5. Click `Run Backtest`
+6. Watch status and results
 
-متن کامل لایسنس را در فایل `LICENSE` ببینید.
+## 8. API Reference
 
-## وابستگی‌های شخص ثالث
+### `POST /api/backtest/run`
 
-این پروژه از کتابخانه Backtrader استفاده می‌کند که لایسنس مخصوص به خودش را دارد.
+Create and start a new backtest job.
 
-اگر نیاز به شخصی‌سازی یا افزودن استراتژی‌های بیشتر دارید، کافی است فایل `strategies.py` را توسعه بدهید.
+Request body example:
+
+```json
+{
+  "symbol": "XAUUSD",
+  "timeframe": "5m",
+  "start_date": "2020-07-10",
+  "end_date": "2025-07-25",
+  "initial_cash": 100000,
+  "strategy_params": {
+    "risk_percent": 0.01,
+    "long_entry_window_periods": 7,
+    "short_entry_window_periods": 7
+  }
+}
+```
+
+Response example:
+
+```json
+{
+  "id": "0f2b9ec5-2f5f-4c83-a456-52f8a842a1f2",
+  "status": "queued",
+  "created_at": "2026-02-14T12:00:00.000000",
+  "updated_at": "2026-02-14T12:00:00.000000",
+  "error": null,
+  "result": null
+}
+```
+
+### `GET /api/backtest/{id}`
+
+Get job status and completed result payload.
+
+Statuses:
+- `queued`
+- `running`
+- `completed`
+- `failed`
+
+### `GET /api/backtest/{id}/equity-curve`
+
+Get only equity curve data for a completed job.
+
+### `GET /api/backtest/parameters`
+
+Returns all strategy default parameters discovered from original strategy class.
+
+## 9. Backtest Request Parameters
+
+Core fields:
+- `symbol`
+- `timeframe`
+- `start_date`
+- `end_date`
+- `initial_cash`
+- `data_file` (optional)
+- `limit_bars` (optional)
+- `run_dual_cerebro` (optional)
+- `use_forex_position_calc` (optional)
+- `strategy_params` (dictionary with strategy overrides)
+
+Result includes:
+- `total_return_pct`
+- `net_profit`
+- `max_drawdown_pct`
+- `sharpe_ratio`
+- `total_trades`
+- `win_rate_pct`
+- `equity_curve`
+- `trade_list`
+
+## 10. Data Source
+
+Default file:
+- `backtrader-pullback-window-xauusd/data/XAUUSD_5m_5Yea.csv`
+
+You can override by sending `data_file` in request payload.
+
+## 11. Troubleshooting
+
+Backend fails with `ModuleNotFoundError`:
+- Ensure backend venv is activated
+- Reinstall dependencies with `pip install -r requirements.txt`
+
+Frontend cannot call backend:
+- Confirm `NEXT_PUBLIC_API_URL` in `frontend/.env.local`
+- Confirm backend runs on matching host/port
+- Check CORS origins in backend config
+
+Backtest job stuck:
+- Check backend logs for strategy/data errors
+- Verify CSV path and format
+
+## 12. License
+
+This project is licensed under the MIT License.
+See `LICENSE`.

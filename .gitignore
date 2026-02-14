@@ -1,4 +1,74 @@
-env/
-__pycache__/
-*.pyc
+# -----------------------------
+# OS / Editor
+# -----------------------------
 .DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# -----------------------------
+# Environment / Secrets
+# -----------------------------
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Python virtual envs
+venv/
+.venv/
+env/
+ENV/
+**/venv/
+**/.venv/
+**/env/
+
+# -----------------------------
+# Python artifacts
+# -----------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+*.egg-info/
+.eggs/
+
+# -----------------------------
+# Backend runtime files
+# -----------------------------
+backend/database/*.db
+backend/database/*.sqlite
+backend/database/*.sqlite3
+backend/temp_reports/
+backtrader-pullback-window-xauusd/temp_reports/
+
+# -----------------------------
+# Node / Frontend artifacts
+# -----------------------------
+node_modules/
+**/node_modules/
+.next/
+out/
+dist/
+coverage/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# -----------------------------
+# Build/cache
+# -----------------------------
+.cache/
+.tmp/
+tmp/
