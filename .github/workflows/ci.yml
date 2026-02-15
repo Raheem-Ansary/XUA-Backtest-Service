@@ -260,7 +260,7 @@ jobs:
         shell: pwsh
         run: |
           $module = "${{ steps.backend-module.outputs.module }}"
-          $backendDir = Join-Path $PWD "backend"
+          $backendDir = (Resolve-Path "backend").Path
           $logFile = Join-Path $backendDir "backend.log"
 
           if (Test-Path $logFile) { Remove-Item $logFile -Force }
@@ -269,11 +269,14 @@ jobs:
           Write-Host "[backend] Module: $module"
           Write-Host "[backend] Log: $logFile"
 
-          $cmd = "python -m uvicorn $module --host 127.0.0.1 --port 8000 > `"$logFile`" 2>&1"
-          $proc = Start-Process -FilePath "cmd.exe" -ArgumentList "/c", $cmd -WorkingDirectory $backendDir -PassThru
-
-          "BACKEND_PID=$($proc.Id)" >> $env:GITHUB_ENV
-          "BACKEND_LOG=$logFile" >> $env:GITHUB_ENV
+          "BACKEND_LOG=$logFile" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          $proc = Start-Process -FilePath "python" `
+            -ArgumentList @("-m","uvicorn",$module,"--host","127.0.0.1","--port","8000") `
+            -WorkingDirectory $backendDir `
+            -PassThru `
+            -RedirectStandardOutput $logFile `
+            -RedirectStandardError $logFile
+          "BACKEND_PID=$($proc.Id)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
           Write-Host "[backend] PID: $($proc.Id)"
           Write-Host "[diag] netstat snapshot after spawn:"
@@ -300,6 +303,13 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
+          function Resolve-BackendLogPath {
+            $candidates = @()
+            if ($env:BACKEND_LOG) { $candidates += $env:BACKEND_LOG }
+            $candidates += @("backend\\backend.log","backend.log")
+            return ($candidates | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1)
+          }
+
           $url = "http://127.0.0.1:8000/health"
           $ok = $false
           for ($i = 1; $i -le 30; $i++) {
@@ -322,7 +332,8 @@ jobs:
           if (-not $ok) {
             Write-Error "Health check failed on Windows: $url"
             Write-Host "===== backend.log (tail 300) ====="
-            if (Test-Path $env:BACKEND_LOG) { Get-Content $env:BACKEND_LOG -Tail 300 } else { Write-Host "Missing log file: $env:BACKEND_LOG" }
+            $logPath = Resolve-BackendLogPath
+            if ($logPath) { Get-Content $logPath -Tail 300 } else { Write-Host "No backend log found." }
             Write-Host "===== netstat :8000 ====="
             netstat -ano | Select-String ":8000" | ForEach-Object { $_.ToString() }
             Write-Host "===== Python sys.path ====="
@@ -363,12 +374,17 @@ jobs:
             exit 1
           fi
 
-      - name: Print backend log on failure (Windows)
-        if: failure() && runner.os == 'Windows'
+      - name: Print backend log (Windows)
+        if: always() && runner.os == 'Windows'
         shell: pwsh
         run: |
+          $candidates = @()
+          if ($env:BACKEND_LOG) { $candidates += $env:BACKEND_LOG }
+          $candidates += @("backend\\backend.log","backend.log")
+          $logPath = $candidates | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
+
           Write-Host "===== backend.log (full) ====="
-          if (Test-Path $env:BACKEND_LOG) { Get-Content $env:BACKEND_LOG -Raw | Write-Host } else { Write-Host "No backend log file found." }
+          if ($logPath) { Get-Content $logPath -Raw | Write-Host } else { Write-Host "No backend log found." }
 
       - name: Print backend log on failure (Linux)
         if: failure() && runner.os == 'Linux'
