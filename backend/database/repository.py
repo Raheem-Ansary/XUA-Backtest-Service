@@ -5,7 +5,7 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
-from core.settings import DATABASE_PATH
+from ..core.settings import DATABASE_PATH
 
 
 def utc_now_iso() -> str:

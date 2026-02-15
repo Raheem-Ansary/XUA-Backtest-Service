@@ -3,12 +3,12 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from backtest_engine.original_strategy import FROMDATE, TODATE
-from backtest_engine.result_serializer import build_backtest_result
-from backtest_engine.runner import default_backtest_config_kwargs, run_backtest
-from database.repository import BacktestRepository
-from models.backtest import BacktestConfig
-from schemas.backtest import BacktestRequest
+from ..backtest_engine.original_strategy import FROMDATE, TODATE
+from ..backtest_engine.result_serializer import build_backtest_result
+from ..backtest_engine.runner import default_backtest_config_kwargs, run_backtest
+from ..database.repository import BacktestRepository
+from ..models.backtest import BacktestConfig
+from ..schemas.backtest import BacktestRequest
 
 
 class BacktestService:

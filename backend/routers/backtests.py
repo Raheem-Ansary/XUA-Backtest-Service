@@ -70,3 +70,4 @@ def get_equity_curve(backtest_id: str) -> dict:
         "status": job["status"],
         "equity_curve": job["result"].get("equity_curve", []),
     }
+

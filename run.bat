@@ -12,7 +12,7 @@ if not exist "%PROJECT_ROOT%" (
 )
 
 echo Starting Backend...
-start "XUA Backend" cmd /k "cd /d %BACKEND_DIR% && call venv\Scripts\activate.bat && uvicorn main:app --host 127.0.0.1 --port 8000"
+start "XUA Backend" cmd /k "cd /d %BACKEND_DIR% && call venv\Scripts\activate.bat && uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000"
 
 timeout /t 5 >nul
 

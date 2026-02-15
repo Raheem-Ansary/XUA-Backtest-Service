@@ -5,7 +5,7 @@ from pathlib import Path
 
 import backtrader as bt
 
-from core.settings import DEFAULT_DATA_FILE, ORIGINAL_DATA_ROOT
+from ..core.settings import DEFAULT_DATA_FILE, ORIGINAL_DATA_ROOT
 
 
 def parse_date(value: str | None) -> datetime | None:

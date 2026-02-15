@@ -4,8 +4,8 @@ from collections.abc import Callable
 
 import backtrader as bt
 
-from backtest_engine.data_loader import load_feed
-from backtest_engine.original_strategy import (
+from .data_loader import load_feed
+from .original_strategy import (
     ENABLE_FOREX_CALC,
     FOREX_INSTRUMENT,
     LIMIT_BARS,
@@ -13,7 +13,7 @@ from backtest_engine.original_strategy import (
     SunriseOgle,
     get_strategy_default_params,
 )
-from models.backtest import BacktestConfig, ExecutionArtifacts
+from ..models.backtest import BacktestConfig, ExecutionArtifacts
 
 
 def _build_strategy_kwargs(config: BacktestConfig) -> dict:

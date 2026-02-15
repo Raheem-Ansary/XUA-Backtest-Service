@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 import os
+import sys
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.backtests import router as backtest_router
-from core.settings import DEFAULT_ALLOWED_ORIGINS
+from .core.settings import DEFAULT_ALLOWED_ORIGINS
+from .routers.backtests import router as backtest_router
 
 
 app = FastAPI(title="XAUUSD Backtest API", version="1.0.0")
+print("PYTHONPATH:", sys.path)
 
 origins_env = os.getenv("BACKEND_CORS_ORIGINS", "")
 if origins_env.strip():

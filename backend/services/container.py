@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from database.repository import BacktestRepository
-from services.backtest_service import BacktestService
+from ..database.repository import BacktestRepository
+from .backtest_service import BacktestService
 
 
 _repository: BacktestRepository | None = None
