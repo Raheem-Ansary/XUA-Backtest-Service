@@ -66,53 +66,6 @@ jobs:
           python -m pip install -r backend/requirements.txt
           python -m pip install pytest uvicorn
 
-      - name: Backend smoke diagnostics
-        shell: pwsh
-        run: |
-          Write-Host "[diag] Python executable:"; python -c "import sys; print(sys.executable)"
-          Write-Host "[diag] Python version:"; python --version
-          Write-Host "[diag] sys.path:"; python -c "import sys, pprint; pprint.pprint(sys.path)"
-          Write-Host "[diag] backend files:"; Get-ChildItem -Path backend -Recurse -Depth 4 | Select-Object FullName
-
-      - name: Detect backend ASGI module path (Windows CMD)
-        if: runner.os == 'Windows'
-        shell: cmd
-        run: |
-          @echo off
-          set MODULE=
-          if exist backend\main.py (
-            set MODULE=main:app
-          ) else if exist backend\app\main.py (
-            set MODULE=app.main:app
-          ) else if exist backend\src\app\main.py (
-            set MODULE=src.app.main:app
-          ) else (
-            echo [backend] Could not detect ASGI module path.
-            dir backend /s /b
-            exit /b 1
-          )
-          echo [backend] ASGI module selected: %MODULE%
-          echo BACKEND_MODULE=%MODULE%>>"%GITHUB_ENV%"
-
-      - name: Detect backend ASGI module path (Linux)
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          module=""
-          if [ -f backend/main.py ]; then
-            module="main:app"
-          elif [ -f backend/app/main.py ]; then
-            module="app.main:app"
-          elif [ -f backend/src/app/main.py ]; then
-            module="src.app.main:app"
-          else
-            echo "[backend] Could not detect ASGI module path." >&2
-            find backend -maxdepth 5 -type f -name "*.py" -print
-            exit 1
-          fi
-          echo "[backend] ASGI module selected: $module"
-          echo "BACKEND_MODULE=$module" >> "$GITHUB_ENV"
-
       - name: Run backend tests if present
         shell: pwsh
         run: |
@@ -218,40 +171,68 @@ jobs:
       - name: Start backend server (Windows CMD)
         if: runner.os == 'Windows'
         shell: cmd
+        working-directory: backend
         run: |
           @echo off
-          if "%BACKEND_MODULE%"=="" (
-            echo [backend] BACKEND_MODULE is empty
+          set MODULE=
+          if exist main.py (
+            set MODULE=main:app
+          ) else if exist app\main.py (
+            set MODULE=app.main:app
+          ) else if exist src\app\main.py (
+            set MODULE=src.app.main:app
+          ) else (
+            echo [backend] Could not detect module path.
+            dir /s /b *.py
             exit /b 1
           )
 
-          pushd backend
-          if exist backend.log del /f /q backend.log
+          set "BACKEND_LOG=%CD%\backend.log"
+          if exist "%BACKEND_LOG%" del /f /q "%BACKEND_LOG%"
 
-          echo BACKEND_LOG=%CD%\backend.log>>"%GITHUB_ENV%"
-          echo [backend] Starting uvicorn module=%BACKEND_MODULE% in %CD%
-          start "" /b python -m uvicorn %BACKEND_MODULE% --host 127.0.0.1 --port 8000 > backend.log 2>&1
+          echo BACKEND_LOG=%BACKEND_LOG%>>"%GITHUB_ENV%"
+          echo BACKEND_MODULE=%MODULE%>>"%GITHUB_ENV%"
+
+          echo [backend] Starting module=%MODULE%
+          start "" /b cmd /c "python -m uvicorn %MODULE% --host 127.0.0.1 --port 8000 --log-level debug 1> backend.log 2>&1"
 
           timeout /t 2 /nobreak >NUL
-          echo ===== netstat :8000 after start =====
+          echo ===== netstat :8000 =====
           netstat -ano | findstr :8000
-          popd
+          echo ===== backend.log (immediate) =====
+          if exist backend.log (
+            type backend.log
+          ) else (
+            echo backend.log not created yet.
+          )
 
       - name: Start backend server (Linux)
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          module="${BACKEND_MODULE}"
+          module=""
+          if [ -f backend/main.py ]; then
+            module="main:app"
+          elif [ -f backend/app/main.py ]; then
+            module="app.main:app"
+          elif [ -f backend/src/app/main.py ]; then
+            module="src.app.main:app"
+          else
+            echo "[backend] Could not detect module path." >&2
+            find backend -maxdepth 5 -type f -name "*.py" -print
+            exit 1
+          fi
+
           log="$PWD/backend/backend.log"
           rm -f "$log"
           (
             cd backend
-            python -m uvicorn "$module" --host 127.0.0.1 --port 8000 > backend.log 2>&1
+            python -m uvicorn "$module" --host 127.0.0.1 --port 8000 --log-level debug > backend.log 2>&1
           ) &
           echo "BACKEND_PID=$!" >> "$GITHUB_ENV"
           echo "BACKEND_LOG=$log" >> "$GITHUB_ENV"
-          echo "[backend] PID: $!"
-          echo "[diag] netstat snapshot after spawn:"
+
+          echo "===== netstat :8000 ====="
           netstat -anp 2>/dev/null | grep 8000 || true
 
       - name: Health check (Windows CMD)
@@ -280,7 +261,17 @@ jobs:
             echo ===== netstat :8000 =====
             netstat -ano | findstr :8000
             echo ===== backend log =====
-            if exist backend\backend.log (
+            if defined BACKEND_LOG (
+              if exist "%BACKEND_LOG%" (
+                type "%BACKEND_LOG%"
+              ) else if exist backend\backend.log (
+                type backend\backend.log
+              ) else if exist backend.log (
+                type backend.log
+              ) else (
+                echo No backend log found.
+              )
+            ) else if exist backend\backend.log (
               type backend\backend.log
             ) else if exist backend.log (
               type backend.log
@@ -301,7 +292,6 @@ jobs:
             code=$(curl -s -o /tmp/health.json -w "%{http_code}" "$url" || true)
             echo "[health] HTTP $code"
             if [ "$code" = "200" ]; then
-              echo "[health] body:"; cat /tmp/health.json || true
               ok=1
               break
             fi
@@ -309,11 +299,17 @@ jobs:
           done
 
           if [ "$ok" -ne 1 ]; then
-            echo "Health check failed on Linux: $url" >&2
-            echo "===== backend.log ====="
-            if [ -f "backend/backend.log" ]; then cat "backend/backend.log"; else echo "No backend log file found."; fi
+            echo "Backend health check failed." >&2
             echo "===== netstat :8000 ====="
             netstat -anp 2>/dev/null | grep 8000 || true
+            echo "===== backend log ====="
+            if [ -f "${BACKEND_LOG:-}" ]; then
+              cat "$BACKEND_LOG"
+            elif [ -f "backend/backend.log" ]; then
+              cat backend/backend.log
+            else
+              echo "No backend log found."
+            fi
             exit 1
           fi
 
@@ -323,12 +319,22 @@ jobs:
         run: |
           @echo off
           echo ===== backend log (always) =====
-          if exist backend\backend.log (
+          if defined BACKEND_LOG (
+            if exist "%BACKEND_LOG%" (
+              type "%BACKEND_LOG%"
+            ) else if exist backend\backend.log (
+              type backend\backend.log
+            ) else if exist backend.log (
+              type backend.log
+            ) else (
+              echo No backend log found
+            )
+          ) else if exist backend\backend.log (
             type backend\backend.log
           ) else if exist backend.log (
             type backend.log
           ) else (
-            echo No backend log found.
+            echo No backend log found
           )
 
       - name: Print backend log (Linux)
@@ -336,10 +342,12 @@ jobs:
         shell: bash
         run: |
           echo "===== backend log (always) ====="
-          if [ -f "backend/backend.log" ]; then
-            cat "backend/backend.log"
+          if [ -f "${BACKEND_LOG:-}" ]; then
+            cat "$BACKEND_LOG"
+          elif [ -f "backend/backend.log" ]; then
+            cat backend/backend.log
           else
-            echo "No backend log file found."
+            echo "No backend log found."
           fi
 
       - name: Stop backend server (Linux)
@@ -347,6 +355,5 @@ jobs:
         shell: bash
         run: |
           if [ -n "${BACKEND_PID:-}" ]; then
-            echo "Stopping backend PID $BACKEND_PID"
             kill "$BACKEND_PID" || true
           fi
