@@ -22,10 +22,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Setup Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: |
+            backend/requirements.txt
+            backend/pyproject.toml
 
       - name: Detect backend dependency manager
         id: backend-deps
@@ -33,11 +37,11 @@ jobs:
         run: |
           if (Test-Path "backend/pyproject.toml") {
             "manager=pyproject" >> $env:GITHUB_OUTPUT
-            Write-Host "Detected backend dependency source: pyproject.toml"
+            Write-Host "[backend] dependency source: pyproject.toml"
           }
           elseif (Test-Path "backend/requirements.txt") {
             "manager=requirements" >> $env:GITHUB_OUTPUT
-            Write-Host "Detected backend dependency source: requirements.txt"
+            Write-Host "[backend] dependency source: requirements.txt"
           }
           else {
             Write-Error "No backend dependency file found. Expected backend/pyproject.toml or backend/requirements.txt"
@@ -49,7 +53,9 @@ jobs:
         shell: pwsh
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -e backend
+          Push-Location backend
+          python -m pip install -e .
+          Pop-Location
           python -m pip install pytest uvicorn
 
       - name: Install backend dependencies (requirements)
@@ -60,15 +66,102 @@ jobs:
           python -m pip install -r backend/requirements.txt
           python -m pip install pytest uvicorn
 
+      - name: Backend smoke diagnostics
+        shell: pwsh
+        run: |
+          Write-Host "[diag] Python executable:"; python -c "import sys; print(sys.executable)"
+          Write-Host "[diag] Python version:"; python --version
+          Write-Host "[diag] sys.path:"; python -c "import sys, pprint; pprint.pprint(sys.path)"
+          Write-Host "[diag] backend files:"; Get-ChildItem -Path backend -Recurse -Depth 4 | Select-Object FullName
+
+      - name: Detect backend ASGI module path
+        id: backend-module
+        shell: pwsh
+        run: |
+          function HasFastApiApp($path) {
+            if (-not (Test-Path $path)) { return $false }
+            $content = Get-Content $path -Raw
+            return ($content -match "app\s*=\s*FastAPI\s*\(")
+          }
+
+          $module = $null
+
+          if (HasFastApiApp "backend/main.py") {
+            $module = "main:app"
+          }
+          elseif (HasFastApiApp "backend/app/main.py") {
+            $module = "app.main:app"
+          }
+          elseif (HasFastApiApp "backend/src/app/main.py") {
+            $module = "src.app.main:app"
+          }
+          else {
+            Write-Host "[diag] No standard ASGI path matched. Searching backend for FastAPI candidates..."
+            $candidates = Get-ChildItem backend -Recurse -Filter *.py |
+              Where-Object {
+                $raw = Get-Content $_.FullName -Raw
+                ($raw -match "FastAPI\s*\(") -and ($raw -match "app\s*=")
+              }
+
+            if ($candidates) {
+              Write-Host "[diag] Candidate FastAPI files:"
+              foreach ($c in $candidates) {
+                Write-Host " - $($c.FullName)"
+              }
+            }
+            else {
+              Write-Host "[diag] No FastAPI candidates found under backend/."
+            }
+
+            if (Test-Path "backend/main.py") {
+              $module = "main:app"
+              Write-Host "[diag] Falling back to main:app"
+            }
+            elseif (Test-Path "backend/app/main.py") {
+              $module = "app.main:app"
+              Write-Host "[diag] Falling back to app.main:app"
+            }
+            elseif (Test-Path "backend/src/app/main.py") {
+              $module = "src.app.main:app"
+              Write-Host "[diag] Falling back to src.app.main:app"
+            }
+            else {
+              Write-Error "Unable to determine ASGI module path for backend."
+              exit 1
+            }
+          }
+
+          "module=$module" >> $env:GITHUB_OUTPUT
+          Write-Host "[backend] ASGI module selected: $module"
+
+      - name: Verify health endpoint exists
+        shell: pwsh
+        run: |
+          $healthFound = $false
+          $files = Get-ChildItem backend -Recurse -Filter *.py
+          foreach ($f in $files) {
+            $raw = Get-Content $f.FullName -Raw
+            if ($raw -match "@app\.get\(\s*['\"]\/health['\"]") {
+              $healthFound = $true
+              Write-Host "[backend] Found /health in $($f.FullName)"
+              break
+            }
+          }
+
+          if (-not $healthFound) {
+            Write-Error "No /health endpoint found. Add @app.get('/health') returning status 200 JSON."
+            exit 1
+          }
+
       - name: Run backend tests if present
         shell: pwsh
         run: |
           if (Test-Path "backend/tests") {
-            Write-Host "Running backend tests..."
+            Write-Host "[backend] Running pytest..."
             python -m pytest -q backend/tests
           }
           else {
-            Write-Host "No backend/tests directory found. Skipping pytest; integration health check will run."
+            Write-Host "[backend] No backend/tests found; proceeding with integration health check."
           }
 
       - name: Detect frontend package manager
@@ -78,24 +171,24 @@ jobs:
           if (Test-Path "frontend/pnpm-lock.yaml") {
             "pm=pnpm" >> $env:GITHUB_OUTPUT
             "lockfile=frontend/pnpm-lock.yaml" >> $env:GITHUB_OUTPUT
-            Write-Host "Detected pnpm"
+            Write-Host "[frontend] package manager: pnpm"
           }
           elseif (Test-Path "frontend/yarn.lock") {
             "pm=yarn" >> $env:GITHUB_OUTPUT
             "lockfile=frontend/yarn.lock" >> $env:GITHUB_OUTPUT
-            Write-Host "Detected yarn"
+            Write-Host "[frontend] package manager: yarn"
           }
           elseif (Test-Path "frontend/package-lock.json") {
             "pm=npm" >> $env:GITHUB_OUTPUT
             "lockfile=frontend/package-lock.json" >> $env:GITHUB_OUTPUT
-            Write-Host "Detected npm"
+            Write-Host "[frontend] package manager: npm"
           }
           else {
             Write-Error "No frontend lockfile found. Expected pnpm-lock.yaml, yarn.lock, or package-lock.json"
             exit 1
           }
 
-      - name: Setup Node.js
+      - name: Setup Node.js (LTS)
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
@@ -118,12 +211,8 @@ jobs:
           elseif ("${{ steps.frontend-pm.outputs.pm }}" -eq "yarn") {
             yarn install --frozen-lockfile
           }
-          elseif ("${{ steps.frontend-pm.outputs.pm }}" -eq "npm") {
-            npm ci
-          }
           else {
-            Write-Error "Unsupported package manager output: ${{ steps.frontend-pm.outputs.pm }}"
-            exit 1
+            npm ci
           }
 
       - name: Run frontend lint (if available)
@@ -134,7 +223,7 @@ jobs:
           $hasLint = $null -ne $pkg.scripts -and $null -ne $pkg.scripts.lint
 
           if ($hasLint) {
-            Write-Host "Lint script detected. Running lint..."
+            Write-Host "[frontend] Running lint..."
             if ("${{ steps.frontend-pm.outputs.pm }}" -eq "pnpm") {
               pnpm run lint
             }
@@ -146,7 +235,7 @@ jobs:
             }
           }
           else {
-            Write-Host "No lint script found in frontend/package.json. Skipping lint."
+            Write-Host "[frontend] No lint script found. Skipping lint."
           }
 
       - name: Build frontend
@@ -155,7 +244,7 @@ jobs:
         env:
           NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:8000
         run: |
-          Write-Host "Building frontend with NEXT_PUBLIC_API_BASE_URL=$env:NEXT_PUBLIC_API_BASE_URL"
+          Write-Host "[frontend] Building with NEXT_PUBLIC_API_BASE_URL=$env:NEXT_PUBLIC_API_BASE_URL"
           if ("${{ steps.frontend-pm.outputs.pm }}" -eq "pnpm") {
             pnpm run build
           }
@@ -170,26 +259,42 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $outLog = Join-Path $PWD "backend-stdout.log"
-          $errLog = Join-Path $PWD "backend-stderr.log"
+          $module = "${{ steps.backend-module.outputs.module }}"
+          $backendDir = Join-Path $PWD "backend"
+          $logFile = Join-Path $backendDir "backend.log"
 
-          $proc = Start-Process -FilePath "python" -ArgumentList "-m", "uvicorn", "backend.main:app", "--host", "127.0.0.1", "--port", "8000" -NoNewWindow -PassThru -RedirectStandardOutput $outLog -RedirectStandardError $errLog
+          if (Test-Path $logFile) { Remove-Item $logFile -Force }
+
+          Write-Host "[backend] Starting uvicorn in: $backendDir"
+          Write-Host "[backend] Module: $module"
+          Write-Host "[backend] Log: $logFile"
+
+          $cmd = "python -m uvicorn $module --host 127.0.0.1 --port 8000 > `"$logFile`" 2>&1"
+          $proc = Start-Process -FilePath "cmd.exe" -ArgumentList "/c", $cmd -WorkingDirectory $backendDir -PassThru
 
           "BACKEND_PID=$($proc.Id)" >> $env:GITHUB_ENV
-          "BACKEND_STDOUT=$outLog" >> $env:GITHUB_ENV
-          "BACKEND_STDERR=$errLog" >> $env:GITHUB_ENV
+          "BACKEND_LOG=$logFile" >> $env:GITHUB_ENV
 
-          Write-Host "Backend started on Windows with PID $($proc.Id)"
+          Write-Host "[backend] PID: $($proc.Id)"
+          Write-Host "[diag] netstat snapshot after spawn:"
+          netstat -ano | Select-String ":8000" | ForEach-Object { $_.ToString() }
 
       - name: Start backend server (Linux)
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          nohup python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 > backend-stdout.log 2> backend-stderr.log &
+          module="${{ steps.backend-module.outputs.module }}"
+          log="$PWD/backend/backend.log"
+          rm -f "$log"
+          (
+            cd backend
+            python -m uvicorn "$module" --host 127.0.0.1 --port 8000 > "$log" 2>&1
+          ) &
           echo "BACKEND_PID=$!" >> "$GITHUB_ENV"
-          echo "BACKEND_STDOUT=$PWD/backend-stdout.log" >> "$GITHUB_ENV"
-          echo "BACKEND_STDERR=$PWD/backend-stderr.log" >> "$GITHUB_ENV"
-          echo "Backend started on Linux with PID $!"
+          echo "BACKEND_LOG=$log" >> "$GITHUB_ENV"
+          echo "[backend] PID: $!"
+          echo "[diag] netstat snapshot after spawn:"
+          netstat -anp 2>/dev/null | grep 8000 || true
 
       - name: Health check (Windows)
         if: runner.os == 'Windows'
@@ -197,25 +302,33 @@ jobs:
         run: |
           $url = "http://127.0.0.1:8000/health"
           $ok = $false
-
           for ($i = 1; $i -le 30; $i++) {
-            Write-Host "[Attempt $i/30] Checking $url"
+            Write-Host "[Attempt $i/30] GET $url"
             try {
               $resp = Invoke-WebRequest -Uri $url -Method Get -UseBasicParsing -TimeoutSec 3
-              Write-Host "Status code: $($resp.StatusCode)"
+              Write-Host "[health] HTTP $($resp.StatusCode)"
               if ($resp.StatusCode -eq 200) {
+                Write-Host "[health] body: $($resp.Content)"
                 $ok = $true
                 break
               }
             }
             catch {
-              Write-Host "Request failed: $($_.Exception.Message)"
+              Write-Host "[health] failed: $($_.Exception.Message)"
             }
             Start-Sleep -Seconds 2
           }
 
           if (-not $ok) {
-            Write-Error "Backend health check failed on Windows. $url was not reachable with status 200."
+            Write-Error "Health check failed on Windows: $url"
+            Write-Host "===== backend.log (tail 300) ====="
+            if (Test-Path $env:BACKEND_LOG) { Get-Content $env:BACKEND_LOG -Tail 300 } else { Write-Host "Missing log file: $env:BACKEND_LOG" }
+            Write-Host "===== netstat :8000 ====="
+            netstat -ano | Select-String ":8000" | ForEach-Object { $_.ToString() }
+            Write-Host "===== Python sys.path ====="
+            python -c "import sys, pprint; pprint.pprint(sys.path)"
+            Write-Host "===== backend tree (depth 4) ====="
+            Get-ChildItem -Path backend -Recurse -Depth 4 | Select-Object FullName
             exit 1
           }
 
@@ -226,10 +339,11 @@ jobs:
           url="http://127.0.0.1:8000/health"
           ok=0
           for i in $(seq 1 30); do
-            echo "[Attempt $i/30] Checking $url"
+            echo "[Attempt $i/30] GET $url"
             code=$(curl -s -o /tmp/health.json -w "%{http_code}" "$url" || true)
-            echo "Status code: $code"
+            echo "[health] HTTP $code"
             if [ "$code" = "200" ]; then
+              echo "[health] body:"; cat /tmp/health.json || true
               ok=1
               break
             fi
@@ -237,27 +351,31 @@ jobs:
           done
 
           if [ "$ok" -ne 1 ]; then
-            echo "Backend health check failed on Linux. $url was not reachable with status 200." >&2
+            echo "Health check failed on Linux: $url" >&2
+            echo "===== backend.log (tail 300) ====="
+            if [ -f "$BACKEND_LOG" ]; then tail -n 300 "$BACKEND_LOG"; else echo "Missing log file: $BACKEND_LOG"; fi
+            echo "===== netstat :8000 ====="
+            netstat -anp 2>/dev/null | grep 8000 || true
+            echo "===== Python sys.path ====="
+            python -c "import sys, pprint; pprint.pprint(sys.path)"
+            echo "===== backend tree (depth 4) ====="
+            find backend -maxdepth 4 -print
             exit 1
           fi
 
-      - name: Print backend logs on failure (Windows)
+      - name: Print backend log on failure (Windows)
         if: failure() && runner.os == 'Windows'
         shell: pwsh
         run: |
-          Write-Host "===== backend stdout ====="
-          if (Test-Path $env:BACKEND_STDOUT) { Get-Content $env:BACKEND_STDOUT -Raw | Write-Host } else { Write-Host "No stdout log file found." }
-          Write-Host "===== backend stderr ====="
-          if (Test-Path $env:BACKEND_STDERR) { Get-Content $env:BACKEND_STDERR -Raw | Write-Host } else { Write-Host "No stderr log file found." }
+          Write-Host "===== backend.log (full) ====="
+          if (Test-Path $env:BACKEND_LOG) { Get-Content $env:BACKEND_LOG -Raw | Write-Host } else { Write-Host "No backend log file found." }
 
-      - name: Print backend logs on failure (Linux)
+      - name: Print backend log on failure (Linux)
         if: failure() && runner.os == 'Linux'
         shell: bash
         run: |
-          echo "===== backend stdout ====="
-          if [ -f "$BACKEND_STDOUT" ]; then cat "$BACKEND_STDOUT"; else echo "No stdout log file found."; fi
-          echo "===== backend stderr ====="
-          if [ -f "$BACKEND_STDERR" ]; then cat "$BACKEND_STDERR"; else echo "No stderr log file found."; fi
+          echo "===== backend.log (full) ====="
+          if [ -f "$BACKEND_LOG" ]; then cat "$BACKEND_LOG"; else echo "No backend log file found."; fi
 
       - name: Stop backend server (Windows)
         if: always() && runner.os == 'Windows'
