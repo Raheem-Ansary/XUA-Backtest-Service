@@ -74,84 +74,44 @@ jobs:
           Write-Host "[diag] sys.path:"; python -c "import sys, pprint; pprint.pprint(sys.path)"
           Write-Host "[diag] backend files:"; Get-ChildItem -Path backend -Recurse -Depth 4 | Select-Object FullName
 
-      - name: Detect backend ASGI module path
-        id: backend-module
-        shell: pwsh
+      - name: Detect backend ASGI module path (Windows CMD)
+        if: runner.os == 'Windows'
+        shell: cmd
         run: |
-          function HasFastApiApp($path) {
-            if (-not (Test-Path $path)) { return $false }
-            $content = Get-Content $path -Raw
-            return ($content -match "app\s*=\s*FastAPI\s*\(")
-          }
+          @echo off
+          set MODULE=
+          if exist backend\main.py (
+            set MODULE=main:app
+          ) else if exist backend\app\main.py (
+            set MODULE=app.main:app
+          ) else if exist backend\src\app\main.py (
+            set MODULE=src.app.main:app
+          ) else (
+            echo [backend] Could not detect ASGI module path.
+            dir backend /s /b
+            exit /b 1
+          )
+          echo [backend] ASGI module selected: %MODULE%
+          echo BACKEND_MODULE=%MODULE%>>"%GITHUB_ENV%"
 
-          $module = $null
-
-          if (HasFastApiApp "backend/main.py") {
-            $module = "main:app"
-          }
-          elseif (HasFastApiApp "backend/app/main.py") {
-            $module = "app.main:app"
-          }
-          elseif (HasFastApiApp "backend/src/app/main.py") {
-            $module = "src.app.main:app"
-          }
-          else {
-            Write-Host "[diag] No standard ASGI path matched. Searching backend for FastAPI candidates..."
-            $candidates = Get-ChildItem backend -Recurse -Filter *.py |
-              Where-Object {
-                $raw = Get-Content $_.FullName -Raw
-                ($raw -match "FastAPI\s*\(") -and ($raw -match "app\s*=")
-              }
-
-            if ($candidates) {
-              Write-Host "[diag] Candidate FastAPI files:"
-              foreach ($c in $candidates) {
-                Write-Host " - $($c.FullName)"
-              }
-            }
-            else {
-              Write-Host "[diag] No FastAPI candidates found under backend/."
-            }
-
-            if (Test-Path "backend/main.py") {
-              $module = "main:app"
-              Write-Host "[diag] Falling back to main:app"
-            }
-            elseif (Test-Path "backend/app/main.py") {
-              $module = "app.main:app"
-              Write-Host "[diag] Falling back to app.main:app"
-            }
-            elseif (Test-Path "backend/src/app/main.py") {
-              $module = "src.app.main:app"
-              Write-Host "[diag] Falling back to src.app.main:app"
-            }
-            else {
-              Write-Error "Unable to determine ASGI module path for backend."
-              exit 1
-            }
-          }
-
-          "module=$module" >> $env:GITHUB_OUTPUT
-          Write-Host "[backend] ASGI module selected: $module"
-
-      - name: Verify health endpoint exists
-        shell: pwsh
+      - name: Detect backend ASGI module path (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
         run: |
-          $healthFound = $false
-          $files = Get-ChildItem backend -Recurse -Filter *.py
-          foreach ($f in $files) {
-            $raw = Get-Content $f.FullName -Raw
-            if ($raw -match "@app\.get\(\s*['\"]\/health['\"]") {
-              $healthFound = $true
-              Write-Host "[backend] Found /health in $($f.FullName)"
-              break
-            }
-          }
-
-          if (-not $healthFound) {
-            Write-Error "No /health endpoint found. Add @app.get('/health') returning status 200 JSON."
+          module=""
+          if [ -f backend/main.py ]; then
+            module="main:app"
+          elif [ -f backend/app/main.py ]; then
+            module="app.main:app"
+          elif [ -f backend/src/app/main.py ]; then
+            module="src.app.main:app"
+          else
+            echo "[backend] Could not detect ASGI module path." >&2
+            find backend -maxdepth 5 -type f -name "*.py" -print
             exit 1
-          }
+          fi
+          echo "[backend] ASGI module selected: $module"
+          echo "BACKEND_MODULE=$module" >> "$GITHUB_ENV"
 
       - name: Run backend tests if present
         shell: pwsh
@@ -255,43 +215,38 @@ jobs:
             npm run build
           }
 
-      - name: Start backend server (Windows)
+      - name: Start backend server (Windows CMD)
         if: runner.os == 'Windows'
-        shell: pwsh
+        shell: cmd
         run: |
-          $module = "${{ steps.backend-module.outputs.module }}"
-          $backendDir = (Resolve-Path "backend").Path
-          $logFile = Join-Path $backendDir "backend.log"
+          @echo off
+          if "%BACKEND_MODULE%"=="" (
+            echo [backend] BACKEND_MODULE is empty
+            exit /b 1
+          )
 
-          if (Test-Path $logFile) { Remove-Item $logFile -Force }
+          pushd backend
+          if exist backend.log del /f /q backend.log
 
-          Write-Host "[backend] Starting uvicorn in: $backendDir"
-          Write-Host "[backend] Module: $module"
-          Write-Host "[backend] Log: $logFile"
+          echo BACKEND_LOG=%CD%\backend.log>>"%GITHUB_ENV%"
+          echo [backend] Starting uvicorn module=%BACKEND_MODULE% in %CD%
+          start "" /b python -m uvicorn %BACKEND_MODULE% --host 127.0.0.1 --port 8000 > backend.log 2>&1
 
-          "BACKEND_LOG=$logFile" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-          $proc = Start-Process -FilePath "python" `
-            -ArgumentList @("-m","uvicorn",$module,"--host","127.0.0.1","--port","8000") `
-            -WorkingDirectory $backendDir `
-            -PassThru `
-            -RedirectStandardOutput $logFile `
-            -RedirectStandardError $logFile
-          "BACKEND_PID=$($proc.Id)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-
-          Write-Host "[backend] PID: $($proc.Id)"
-          Write-Host "[diag] netstat snapshot after spawn:"
-          netstat -ano | Select-String ":8000" | ForEach-Object { $_.ToString() }
+          timeout /t 2 /nobreak >NUL
+          echo ===== netstat :8000 after start =====
+          netstat -ano | findstr :8000
+          popd
 
       - name: Start backend server (Linux)
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          module="${{ steps.backend-module.outputs.module }}"
+          module="${BACKEND_MODULE}"
           log="$PWD/backend/backend.log"
           rm -f "$log"
           (
             cd backend
-            python -m uvicorn "$module" --host 127.0.0.1 --port 8000 > "$log" 2>&1
+            python -m uvicorn "$module" --host 127.0.0.1 --port 8000 > backend.log 2>&1
           ) &
           echo "BACKEND_PID=$!" >> "$GITHUB_ENV"
           echo "BACKEND_LOG=$log" >> "$GITHUB_ENV"
@@ -299,49 +254,41 @@ jobs:
           echo "[diag] netstat snapshot after spawn:"
           netstat -anp 2>/dev/null | grep 8000 || true
 
-      - name: Health check (Windows)
+      - name: Health check (Windows CMD)
         if: runner.os == 'Windows'
-        shell: pwsh
+        shell: cmd
         run: |
-          function Resolve-BackendLogPath {
-            $candidates = @()
-            if ($env:BACKEND_LOG) { $candidates += $env:BACKEND_LOG }
-            $candidates += @("backend\\backend.log","backend.log")
-            return ($candidates | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1)
-          }
+          @echo off
+          setlocal EnableDelayedExpansion
+          set OK=0
 
-          $url = "http://127.0.0.1:8000/health"
-          $ok = $false
-          for ($i = 1; $i -le 30; $i++) {
-            Write-Host "[Attempt $i/30] GET $url"
-            try {
-              $resp = Invoke-WebRequest -Uri $url -Method Get -UseBasicParsing -TimeoutSec 3
-              Write-Host "[health] HTTP $($resp.StatusCode)"
-              if ($resp.StatusCode -eq 200) {
-                Write-Host "[health] body: $($resp.Content)"
-                $ok = $true
-                break
-              }
-            }
-            catch {
-              Write-Host "[health] failed: $($_.Exception.Message)"
-            }
-            Start-Sleep -Seconds 2
-          }
+          for /l %%i in (1,1,30) do (
+            set CODE=
+            echo [Attempt %%i/30] Checking http://127.0.0.1:8000/health
+            for /f %%s in ('curl -s -o NUL -w "%%{http_code}" http://127.0.0.1:8000/health') do set CODE=%%s
+            if "!CODE!"=="200" (
+              echo [health] HTTP 200
+              set OK=1
+              goto :done
+            )
+            timeout /t 2 /nobreak >NUL
+          )
 
-          if (-not $ok) {
-            Write-Error "Health check failed on Windows: $url"
-            Write-Host "===== backend.log (tail 300) ====="
-            $logPath = Resolve-BackendLogPath
-            if ($logPath) { Get-Content $logPath -Tail 300 } else { Write-Host "No backend log found." }
-            Write-Host "===== netstat :8000 ====="
-            netstat -ano | Select-String ":8000" | ForEach-Object { $_.ToString() }
-            Write-Host "===== Python sys.path ====="
-            python -c "import sys, pprint; pprint.pprint(sys.path)"
-            Write-Host "===== backend tree (depth 4) ====="
-            Get-ChildItem -Path backend -Recurse -Depth 4 | Select-Object FullName
-            exit 1
-          }
+          :done
+          if "!OK!"=="0" (
+            echo Backend health check failed.
+            echo ===== netstat :8000 =====
+            netstat -ano | findstr :8000
+            echo ===== backend log =====
+            if exist backend\backend.log (
+              type backend\backend.log
+            ) else if exist backend.log (
+              type backend.log
+            ) else (
+              echo No backend log found.
+            )
+            exit /b 1
+          )
 
       - name: Health check (Linux)
         if: runner.os == 'Linux'
@@ -363,44 +310,37 @@ jobs:
 
           if [ "$ok" -ne 1 ]; then
             echo "Health check failed on Linux: $url" >&2
-            echo "===== backend.log (tail 300) ====="
-            if [ -f "$BACKEND_LOG" ]; then tail -n 300 "$BACKEND_LOG"; else echo "Missing log file: $BACKEND_LOG"; fi
+            echo "===== backend.log ====="
+            if [ -f "backend/backend.log" ]; then cat "backend/backend.log"; else echo "No backend log file found."; fi
             echo "===== netstat :8000 ====="
             netstat -anp 2>/dev/null | grep 8000 || true
-            echo "===== Python sys.path ====="
-            python -c "import sys, pprint; pprint.pprint(sys.path)"
-            echo "===== backend tree (depth 4) ====="
-            find backend -maxdepth 4 -print
             exit 1
           fi
 
-      - name: Print backend log (Windows)
+      - name: Print backend log (Windows CMD)
         if: always() && runner.os == 'Windows'
-        shell: pwsh
+        shell: cmd
         run: |
-          $candidates = @()
-          if ($env:BACKEND_LOG) { $candidates += $env:BACKEND_LOG }
-          $candidates += @("backend\\backend.log","backend.log")
-          $logPath = $candidates | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
+          @echo off
+          echo ===== backend log (always) =====
+          if exist backend\backend.log (
+            type backend\backend.log
+          ) else if exist backend.log (
+            type backend.log
+          ) else (
+            echo No backend log found.
+          )
 
-          Write-Host "===== backend.log (full) ====="
-          if ($logPath) { Get-Content $logPath -Raw | Write-Host } else { Write-Host "No backend log found." }
-
-      - name: Print backend log on failure (Linux)
-        if: failure() && runner.os == 'Linux'
+      - name: Print backend log (Linux)
+        if: always() && runner.os == 'Linux'
         shell: bash
         run: |
-          echo "===== backend.log (full) ====="
-          if [ -f "$BACKEND_LOG" ]; then cat "$BACKEND_LOG"; else echo "No backend log file found."; fi
-
-      - name: Stop backend server (Windows)
-        if: always() && runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          if ($env:BACKEND_PID) {
-            Write-Host "Stopping backend PID $env:BACKEND_PID"
-            Stop-Process -Id $env:BACKEND_PID -Force -ErrorAction SilentlyContinue
-          }
+          echo "===== backend log (always) ====="
+          if [ -f "backend/backend.log" ]; then
+            cat "backend/backend.log"
+          else
+            echo "No backend log file found."
+          fi
 
       - name: Stop backend server (Linux)
         if: always() && runner.os == 'Linux'
