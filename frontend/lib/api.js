@@ -1,9 +1,10 @@
-const rawApiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "";
+const rawApiBaseUrl =
+  process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || "";
 const API_BASE_URL = rawApiBaseUrl.trim().replace(/\/+$/, "");
 
 if (!API_BASE_URL) {
   console.warn(
-    "NEXT_PUBLIC_API_URL is missing. Set it in frontend/.env.local (example: http://localhost:8000)."
+    "NEXT_PUBLIC_API_BASE_URL is missing. Set it in frontend/.env.local (example: http://localhost:8000)."
   );
 }
 
@@ -21,7 +22,9 @@ function extractErrorMessage(payload, fallback) {
 
 async function request(path, options = {}) {
   if (!API_BASE_URL) {
-    throw new Error("API base URL is not configured. Set NEXT_PUBLIC_API_URL in frontend/.env.local.");
+    throw new Error(
+      "API base URL is not configured. Set NEXT_PUBLIC_API_BASE_URL in frontend/.env.local."
+    );
   }
 
   const response = await fetch(`${API_BASE_URL}${path}`, {

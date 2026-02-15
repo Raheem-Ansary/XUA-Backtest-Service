@@ -1,0 +1,278 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    name: CI (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+
+    env:
+      NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:8000
+      PYTHONUNBUFFERED: "1"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Detect backend dependency manager
+        id: backend-deps
+        shell: pwsh
+        run: |
+          if (Test-Path "backend/pyproject.toml") {
+            "manager=pyproject" >> $env:GITHUB_OUTPUT
+            Write-Host "Detected backend dependency source: pyproject.toml"
+          }
+          elseif (Test-Path "backend/requirements.txt") {
+            "manager=requirements" >> $env:GITHUB_OUTPUT
+            Write-Host "Detected backend dependency source: requirements.txt"
+          }
+          else {
+            Write-Error "No backend dependency file found. Expected backend/pyproject.toml or backend/requirements.txt"
+            exit 1
+          }
+
+      - name: Install backend dependencies (pyproject)
+        if: steps.backend-deps.outputs.manager == 'pyproject'
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e backend
+          python -m pip install pytest uvicorn
+
+      - name: Install backend dependencies (requirements)
+        if: steps.backend-deps.outputs.manager == 'requirements'
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r backend/requirements.txt
+          python -m pip install pytest uvicorn
+
+      - name: Run backend tests if present
+        shell: pwsh
+        run: |
+          if (Test-Path "backend/tests") {
+            Write-Host "Running backend tests..."
+            python -m pytest -q backend/tests
+          }
+          else {
+            Write-Host "No backend/tests directory found. Skipping pytest; integration health check will run."
+          }
+
+      - name: Detect frontend package manager
+        id: frontend-pm
+        shell: pwsh
+        run: |
+          if (Test-Path "frontend/pnpm-lock.yaml") {
+            "pm=pnpm" >> $env:GITHUB_OUTPUT
+            "lockfile=frontend/pnpm-lock.yaml" >> $env:GITHUB_OUTPUT
+            Write-Host "Detected pnpm"
+          }
+          elseif (Test-Path "frontend/yarn.lock") {
+            "pm=yarn" >> $env:GITHUB_OUTPUT
+            "lockfile=frontend/yarn.lock" >> $env:GITHUB_OUTPUT
+            Write-Host "Detected yarn"
+          }
+          elseif (Test-Path "frontend/package-lock.json") {
+            "pm=npm" >> $env:GITHUB_OUTPUT
+            "lockfile=frontend/package-lock.json" >> $env:GITHUB_OUTPUT
+            Write-Host "Detected npm"
+          }
+          else {
+            Write-Error "No frontend lockfile found. Expected pnpm-lock.yaml, yarn.lock, or package-lock.json"
+            exit 1
+          }
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: ${{ steps.frontend-pm.outputs.pm }}
+          cache-dependency-path: ${{ steps.frontend-pm.outputs.lockfile }}
+
+      - name: Setup pnpm
+        if: steps.frontend-pm.outputs.pm == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install frontend dependencies
+        shell: pwsh
+        working-directory: frontend
+        run: |
+          if ("${{ steps.frontend-pm.outputs.pm }}" -eq "pnpm") {
+            pnpm install --frozen-lockfile
+          }
+          elseif ("${{ steps.frontend-pm.outputs.pm }}" -eq "yarn") {
+            yarn install --frozen-lockfile
+          }
+          elseif ("${{ steps.frontend-pm.outputs.pm }}" -eq "npm") {
+            npm ci
+          }
+          else {
+            Write-Error "Unsupported package manager output: ${{ steps.frontend-pm.outputs.pm }}"
+            exit 1
+          }
+
+      - name: Run frontend lint (if available)
+        shell: pwsh
+        working-directory: frontend
+        run: |
+          $pkg = Get-Content package.json -Raw | ConvertFrom-Json
+          $hasLint = $null -ne $pkg.scripts -and $null -ne $pkg.scripts.lint
+
+          if ($hasLint) {
+            Write-Host "Lint script detected. Running lint..."
+            if ("${{ steps.frontend-pm.outputs.pm }}" -eq "pnpm") {
+              pnpm run lint
+            }
+            elseif ("${{ steps.frontend-pm.outputs.pm }}" -eq "yarn") {
+              yarn lint
+            }
+            else {
+              npm run lint
+            }
+          }
+          else {
+            Write-Host "No lint script found in frontend/package.json. Skipping lint."
+          }
+
+      - name: Build frontend
+        shell: pwsh
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:8000
+        run: |
+          Write-Host "Building frontend with NEXT_PUBLIC_API_BASE_URL=$env:NEXT_PUBLIC_API_BASE_URL"
+          if ("${{ steps.frontend-pm.outputs.pm }}" -eq "pnpm") {
+            pnpm run build
+          }
+          elseif ("${{ steps.frontend-pm.outputs.pm }}" -eq "yarn") {
+            yarn build
+          }
+          else {
+            npm run build
+          }
+
+      - name: Start backend server (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $outLog = Join-Path $PWD "backend-stdout.log"
+          $errLog = Join-Path $PWD "backend-stderr.log"
+
+          $proc = Start-Process -FilePath "python" -ArgumentList "-m", "uvicorn", "backend.main:app", "--host", "127.0.0.1", "--port", "8000" -NoNewWindow -PassThru -RedirectStandardOutput $outLog -RedirectStandardError $errLog
+
+          "BACKEND_PID=$($proc.Id)" >> $env:GITHUB_ENV
+          "BACKEND_STDOUT=$outLog" >> $env:GITHUB_ENV
+          "BACKEND_STDERR=$errLog" >> $env:GITHUB_ENV
+
+          Write-Host "Backend started on Windows with PID $($proc.Id)"
+
+      - name: Start backend server (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          nohup python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 > backend-stdout.log 2> backend-stderr.log &
+          echo "BACKEND_PID=$!" >> "$GITHUB_ENV"
+          echo "BACKEND_STDOUT=$PWD/backend-stdout.log" >> "$GITHUB_ENV"
+          echo "BACKEND_STDERR=$PWD/backend-stderr.log" >> "$GITHUB_ENV"
+          echo "Backend started on Linux with PID $!"
+
+      - name: Health check (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $url = "http://127.0.0.1:8000/health"
+          $ok = $false
+
+          for ($i = 1; $i -le 30; $i++) {
+            Write-Host "[Attempt $i/30] Checking $url"
+            try {
+              $resp = Invoke-WebRequest -Uri $url -Method Get -UseBasicParsing -TimeoutSec 3
+              Write-Host "Status code: $($resp.StatusCode)"
+              if ($resp.StatusCode -eq 200) {
+                $ok = $true
+                break
+              }
+            }
+            catch {
+              Write-Host "Request failed: $($_.Exception.Message)"
+            }
+            Start-Sleep -Seconds 2
+          }
+
+          if (-not $ok) {
+            Write-Error "Backend health check failed on Windows. $url was not reachable with status 200."
+            exit 1
+          }
+
+      - name: Health check (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          url="http://127.0.0.1:8000/health"
+          ok=0
+          for i in $(seq 1 30); do
+            echo "[Attempt $i/30] Checking $url"
+            code=$(curl -s -o /tmp/health.json -w "%{http_code}" "$url" || true)
+            echo "Status code: $code"
+            if [ "$code" = "200" ]; then
+              ok=1
+              break
+            fi
+            sleep 2
+          done
+
+          if [ "$ok" -ne 1 ]; then
+            echo "Backend health check failed on Linux. $url was not reachable with status 200." >&2
+            exit 1
+          fi
+
+      - name: Print backend logs on failure (Windows)
+        if: failure() && runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Write-Host "===== backend stdout ====="
+          if (Test-Path $env:BACKEND_STDOUT) { Get-Content $env:BACKEND_STDOUT -Raw | Write-Host } else { Write-Host "No stdout log file found." }
+          Write-Host "===== backend stderr ====="
+          if (Test-Path $env:BACKEND_STDERR) { Get-Content $env:BACKEND_STDERR -Raw | Write-Host } else { Write-Host "No stderr log file found." }
+
+      - name: Print backend logs on failure (Linux)
+        if: failure() && runner.os == 'Linux'
+        shell: bash
+        run: |
+          echo "===== backend stdout ====="
+          if [ -f "$BACKEND_STDOUT" ]; then cat "$BACKEND_STDOUT"; else echo "No stdout log file found."; fi
+          echo "===== backend stderr ====="
+          if [ -f "$BACKEND_STDERR" ]; then cat "$BACKEND_STDERR"; else echo "No stderr log file found."; fi
+
+      - name: Stop backend server (Windows)
+        if: always() && runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if ($env:BACKEND_PID) {
+            Write-Host "Stopping backend PID $env:BACKEND_PID"
+            Stop-Process -Id $env:BACKEND_PID -Force -ErrorAction SilentlyContinue
+          }
+
+      - name: Stop backend server (Linux)
+        if: always() && runner.os == 'Linux'
+        shell: bash
+        run: |
+          if [ -n "${BACKEND_PID:-}" ]; then
+            echo "Stopping backend PID $BACKEND_PID"
+            kill "$BACKEND_PID" || true
+          fi
