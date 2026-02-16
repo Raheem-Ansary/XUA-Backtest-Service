@@ -6,17 +6,15 @@ import backtrader as bt
 
 from .data_loader import load_feed
 from .original_strategy import (
-    ENABLE_FOREX_CALC,
-    FOREX_INSTRUMENT,
-    LIMIT_BARS,
-    RUN_DUAL_CEREBRO,
-    SunriseOgle,
+    get_strategy_runtime_config,
+    get_sunrise_ogle_class,
     get_strategy_default_params,
 )
 from ..models.backtest import BacktestConfig, ExecutionArtifacts
 
 
 def _build_strategy_kwargs(config: BacktestConfig) -> dict:
+    strategy_config = get_strategy_runtime_config()
     params = get_strategy_default_params()
     params.update(config.strategy_params)
 
@@ -32,7 +30,7 @@ def _build_strategy_kwargs(config: BacktestConfig) -> dict:
 
     params["plot_result"] = False
     params["use_forex_position_calc"] = config.use_forex_position_calc
-    params["forex_instrument"] = config.symbol or FOREX_INSTRUMENT
+    params["forex_instrument"] = config.symbol or strategy_config["FOREX_INSTRUMENT"]
     return params
 
 
@@ -54,17 +52,18 @@ def _add_common_analyzers(cerebro: bt.Cerebro, use_daily_sharpe: bool) -> None:
 
 def _run_single_cerebro(config: BacktestConfig, strategy_kwargs: dict, use_daily_sharpe: bool) -> tuple:
     cerebro = bt.Cerebro(stdstats=False)
+    strategy_class = get_sunrise_ogle_class()
     data = load_feed(config.data_file, config.start_date, config.end_date)
     cerebro.adddata(data)
     cerebro.broker.setcash(config.initial_cash)
     cerebro.broker.setcommission(leverage=30.0)
-    cerebro.addstrategy(SunriseOgle, **strategy_kwargs)
+    cerebro.addstrategy(strategy_class, **strategy_kwargs)
     _add_common_analyzers(cerebro, use_daily_sharpe=use_daily_sharpe)
 
     original_next: Callable | None = None
     limit_bars = config.limit_bars
     if limit_bars > 0:
-        original_next = SunriseOgle.next
+        original_next = strategy_class.next
 
         def limited_next(self):
             if len(self.data) >= limit_bars:
@@ -72,13 +71,13 @@ def _run_single_cerebro(config: BacktestConfig, strategy_kwargs: dict, use_daily
                 return
             original_next(self)
 
-        SunriseOgle.next = limited_next
+        strategy_class.next = limited_next
 
     try:
         results = cerebro.run()
     finally:
         if original_next is not None:
-            SunriseOgle.next = original_next
+            strategy_class.next = original_next
 
     return cerebro, results[0]
 
@@ -186,9 +185,10 @@ def run_backtest(config: BacktestConfig) -> ExecutionArtifacts:
 
 
 def default_backtest_config_kwargs() -> dict:
+    strategy_config = get_strategy_runtime_config()
     return {
         "initial_cash": 100000.0,
-        "limit_bars": LIMIT_BARS,
-        "run_dual_cerebro": RUN_DUAL_CEREBRO,
-        "use_forex_position_calc": ENABLE_FOREX_CALC,
+        "limit_bars": strategy_config["LIMIT_BARS"],
+        "run_dual_cerebro": strategy_config["RUN_DUAL_CEREBRO"],
+        "use_forex_position_calc": strategy_config["ENABLE_FOREX_CALC"],
     }

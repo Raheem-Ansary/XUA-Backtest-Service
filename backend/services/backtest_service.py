@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from ..backtest_engine.original_strategy import FROMDATE, TODATE
+from ..backtest_engine.original_strategy import get_default_dates
 from ..backtest_engine.result_serializer import build_backtest_result
 from ..backtest_engine.runner import default_backtest_config_kwargs, run_backtest
 from ..database.repository import BacktestRepository
@@ -22,6 +22,7 @@ class BacktestService:
 
     def build_config(self, payload: BacktestRequest) -> BacktestConfig:
         defaults = default_backtest_config_kwargs()
+        from_date, to_date = get_default_dates()
 
         # allow top-level extras to override strategy params dynamically
         payload_dict = payload.model_dump()
@@ -55,8 +56,8 @@ class BacktestService:
         return BacktestConfig(
             symbol=payload.symbol,
             timeframe=payload.timeframe,
-            start_date=payload.start_date or FROMDATE,
-            end_date=payload.end_date or TODATE,
+            start_date=payload.start_date or from_date,
+            end_date=payload.end_date or to_date,
             data_file=payload.data_file,
             initial_cash=payload.initial_cash or defaults["initial_cash"],
             limit_bars=payload.limit_bars if payload.limit_bars is not None else defaults["limit_bars"],

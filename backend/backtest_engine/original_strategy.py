@@ -1,24 +1,33 @@
 from __future__ import annotations
 
 from .. import strategies
-from ..services.engine import get_available_strategies
 
 
-SunriseOgle = get_available_strategies()["SunriseOgle"]
+def get_sunrise_ogle_class():
+    return strategies.get_strategy_class("SunriseOgle")
 
-# Script-level defaults preserved from the original project
-DATA_FILENAME = strategies.DATA_FILENAME
-FROMDATE = strategies.FROMDATE
-TODATE = strategies.TODATE
-STARTING_CASH = strategies.STARTING_CASH
-QUICK_TEST = strategies.QUICK_TEST
-LIMIT_BARS = strategies.LIMIT_BARS
-ENABLE_PLOT = strategies.ENABLE_PLOT
-ENABLE_FOREX_CALC = strategies.ENABLE_FOREX_CALC
-FOREX_INSTRUMENT = strategies.FOREX_INSTRUMENT
-TEST_FOREX_MODE = strategies.TEST_FOREX_MODE
-RUN_DUAL_CEREBRO = strategies.RUN_DUAL_CEREBRO
+
+def get_strategy_runtime_config() -> dict:
+    return {
+        "DATA_FILENAME": strategies.get_strategy_constant("DATA_FILENAME"),
+        "FROMDATE": strategies.get_strategy_constant("FROMDATE"),
+        "TODATE": strategies.get_strategy_constant("TODATE"),
+        "STARTING_CASH": strategies.get_strategy_constant("STARTING_CASH"),
+        "QUICK_TEST": strategies.get_strategy_constant("QUICK_TEST"),
+        "LIMIT_BARS": strategies.get_strategy_constant("LIMIT_BARS"),
+        "ENABLE_PLOT": strategies.get_strategy_constant("ENABLE_PLOT"),
+        "ENABLE_FOREX_CALC": strategies.get_strategy_constant("ENABLE_FOREX_CALC"),
+        "FOREX_INSTRUMENT": strategies.get_strategy_constant("FOREX_INSTRUMENT"),
+        "TEST_FOREX_MODE": strategies.get_strategy_constant("TEST_FOREX_MODE"),
+        "RUN_DUAL_CEREBRO": strategies.get_strategy_constant("RUN_DUAL_CEREBRO"),
+    }
 
 
 def get_strategy_default_params() -> dict:
-    return dict(SunriseOgle.params._getitems())
+    strategy_class = get_sunrise_ogle_class()
+    return dict(strategy_class.params._getitems())
+
+
+def get_default_dates() -> tuple[str | None, str | None]:
+    config = get_strategy_runtime_config()
+    return config["FROMDATE"], config["TODATE"]
