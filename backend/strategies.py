@@ -4,6 +4,7 @@ import logging
 from importlib.util import module_from_spec, spec_from_file_location
 import inspect
 from pathlib import Path
+import sys
 from types import ModuleType
 
 logger = logging.getLogger(__name__)
@@ -73,6 +74,9 @@ def load_strategy_module() -> ModuleType:
         raise ImportError(f"Unable to load strategy module from {strategy_file}")
 
     module = module_from_spec(spec)
+    # Register the module before execution so any import-time introspection
+    # that relies on sys.modules[__name__] works on all platforms.
+    sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     _LOADED_MODULE = module
     return module

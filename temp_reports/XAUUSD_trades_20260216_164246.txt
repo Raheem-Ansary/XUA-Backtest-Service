@@ -1,0 +1,2036 @@
+=== SUNRISE STRATEGY TRADE REPORT ===
+Asset: XAUUSD
+Generated: 2026-02-16 16:42:46
+Data File: XAUUSD_5m_5Yea.csv
+Trading Direction: LONG
+
+CONFIGURATION PARAMETERS:
+------------------------------
+LONG Configuration:
+  ATR Range: 0.000000 - 2.000000
+  ATR Increment Range: 0.200000 to 1.600000
+  Angle Range: 35.00° to 95.00°
+  Candle Direction Filter: DISABLED
+  Pullback Mode: True
+
+Common Parameters:
+  Risk Percent: 0.0%
+  Trading Hours: 24/7 (No time filter)
+  Window Time Offset: DISABLED (Immediate window opening)
+  LONG Stop Loss ATR Multiplier: 4.5
+  LONG Take Profit ATR Multiplier: 6.5
+
+================================================================================
+TRADE DETAILS
+================================================================================
+
+ENTRY #1
+Time: 2022-01-20 02:30:00
+Direction: LONG
+ATR Current: 1.054720
+ATR Increment: +0.071336 (Filtered)
+Angle Current: 84.05°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #1
+Time: 2022-01-20 15:05:00
+Exit Reason: TAKE_PROFIT
+P&L: 700.57
+Pips: 68552.8
+Duration: 151 bars (755 min)
+================================================================================
+
+ENTRY #2
+Time: 2022-02-07 05:25:00
+Direction: LONG
+ATR Current: 0.485797
+ATR Change: -0.003164 (Decrement Filter OFF)
+Angle Current: 41.99°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #2
+Time: 2022-02-07 08:00:00
+Exit Reason: TAKE_PROFIT
+P&L: 1383.07
+Pips: 24742.0
+Duration: 31 bars (155 min)
+================================================================================
+
+ENTRY #3
+Time: 2022-02-10 05:10:00
+Direction: LONG
+ATR Current: 0.309546
+ATR Change: -0.003321 (Decrement Filter OFF)
+Angle Current: 62.24°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #3
+Time: 2022-02-10 07:40:00
+Exit Reason: TAKE_PROFIT
+P&L: 1021.03
+Pips: 10004.5
+Duration: 30 bars (150 min)
+================================================================================
+
+ENTRY #4
+Time: 2022-02-11 10:10:00
+Direction: LONG
+ATR Current: 0.709781
+ATR Change: -0.123173 (Decrement Filter OFF)
+Angle Current: 63.43°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #4
+Time: 2022-02-11 12:25:00
+Exit Reason: TAKE_PROFIT
+P&L: 932.71
+Pips: 48952.2
+Duration: 27 bars (135 min)
+================================================================================
+
+ENTRY #5
+Time: 2022-02-14 00:35:00
+Direction: LONG
+ATR Current: 1.484527
+ATR Change: -0.072774 (Decrement Filter OFF)
+Angle Current: 85.67°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #5
+Time: 2022-02-14 04:05:00
+Exit Reason: STOP_LOSS
+P&L: -795.04
+Pips: -92395.3
+Duration: 42 bars (210 min)
+================================================================================
+
+ENTRY #6
+Time: 2022-02-14 09:55:00
+Direction: LONG
+ATR Current: 1.277712
+ATR Change: -0.161165 (Decrement Filter OFF)
+Angle Current: 80.05°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #6
+Time: 2022-02-14 14:30:00
+Exit Reason: TAKE_PROFIT
+P&L: 843.51
+Pips: 64372.9
+Duration: 55 bars (275 min)
+================================================================================
+
+ENTRY #7
+Time: 2022-02-14 23:10:00
+Direction: LONG
+ATR Current: 0.962718
+ATR Change: -0.095299 (Decrement Filter OFF)
+Angle Current: 78.69°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #7
+Time: 2022-02-15 03:00:00
+Exit Reason: TAKE_PROFIT
+P&L: 1267.53
+Pips: 51322.8
+Duration: 46 bars (230 min)
+================================================================================
+
+ENTRY #8
+Time: 2022-02-17 00:00:00
+Direction: LONG
+ATR Current: 0.820207
+ATR Increment: +0.037209 (Filtered)
+Angle Current: 84.56°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #8
+Time: 2022-02-17 06:05:00
+Exit Reason: TAKE_PROFIT
+P&L: 1098.27
+Pips: 47147.9
+Duration: 73 bars (365 min)
+================================================================================
+
+ENTRY #9
+Time: 2022-02-22 01:55:00
+Direction: LONG
+ATR Current: 1.616762
+ATR Change: -0.178566 (Decrement Filter OFF)
+Angle Current: 82.79°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #9
+Time: 2022-02-22 08:55:00
+Exit Reason: STOP_LOSS
+P&L: -857.54
+Pips: -140417.6
+Duration: 84 bars (420 min)
+================================================================================
+
+ENTRY #10
+Time: 2022-02-22 19:35:00
+Direction: LONG
+ATR Current: 1.468148
+ATR Increment: +0.395212 (Filtered)
+Angle Current: 86.87°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #10
+Time: 2022-02-23 06:10:00
+Exit Reason: STOP_LOSS
+P&L: -941.67
+Pips: -83031.5
+Duration: 127 bars (635 min)
+================================================================================
+
+ENTRY #11
+Time: 2022-03-17 09:25:00
+Direction: LONG
+ATR Current: 1.893162
+ATR Increment: +0.040049 (Filtered)
+Angle Current: 86.36°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #11
+Time: 2022-03-18 03:35:00
+Exit Reason: STOP_LOSS
+P&L: -1027.92
+Pips: -63531.6
+Duration: 218 bars (1090 min)
+================================================================================
+
+ENTRY #12
+Time: 2022-03-21 03:45:00
+Direction: LONG
+ATR Current: 0.844924
+ATR Change: -0.177073 (Decrement Filter OFF)
+Angle Current: 45.00°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #12
+Time: 2022-03-21 06:10:00
+Exit Reason: STOP_LOSS
+P&L: -798.43
+Pips: -42999.2
+Duration: 29 bars (145 min)
+================================================================================
+
+ENTRY #13
+Time: 2022-03-23 12:15:00
+Direction: LONG
+ATR Current: 1.832036
+ATR Increment: +0.082236 (Filtered)
+Angle Current: 85.70°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #13
+Time: 2022-03-23 19:30:00
+Exit Reason: TAKE_PROFIT
+P&L: 1298.82
+Pips: 120379.6
+Duration: 87 bars (435 min)
+================================================================================
+
+ENTRY #14
+Time: 2022-03-23 22:35:00
+Direction: LONG
+ATR Current: 0.946322
+ATR Change: -0.143588 (Decrement Filter OFF)
+Angle Current: 78.47°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #14
+Time: 2022-03-24 02:40:00
+Exit Reason: STOP_LOSS
+P&L: -951.69
+Pips: -58063.2
+Duration: 49 bars (245 min)
+================================================================================
+
+ENTRY #15
+Time: 2022-04-18 03:00:00
+Direction: LONG
+ATR Current: 1.244811
+ATR Change: -0.051459 (Decrement Filter OFF)
+Angle Current: 81.12°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #15
+Time: 2022-04-18 07:45:00
+Exit Reason: TAKE_PROFIT
+P&L: 861.13
+Pips: 76551.9
+Duration: 57 bars (285 min)
+================================================================================
+
+ENTRY #16
+Time: 2022-04-22 07:15:00
+Direction: LONG
+ATR Current: 1.425474
+ATR Increment: +0.048167 (Filtered)
+Angle Current: 86.75°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #16
+Time: 2022-04-22 08:55:00
+Exit Reason: STOP_LOSS
+P&L: -843.46
+Pips: -99404.7
+Duration: 20 bars (100 min)
+================================================================================
+
+ENTRY #17
+Time: 2022-05-06 05:10:00
+Direction: LONG
+ATR Current: 0.742105
+ATR Increment: +0.012297 (Filtered)
+Angle Current: 69.68°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #17
+Time: 2022-05-06 08:55:00
+Exit Reason: TAKE_PROFIT
+P&L: 1066.74
+Pips: 46678.9
+Duration: 45 bars (225 min)
+================================================================================
+
+ENTRY #18
+Time: 2022-05-27 12:20:00
+Direction: LONG
+ATR Current: 1.659145
+ATR Increment: +0.053230 (Filtered)
+Angle Current: -76.61°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #18
+Time: 2022-05-27 12:30:00
+Exit Reason: STOP_LOSS
+P&L: -797.62
+Pips: -85391.5
+Duration: 2 bars (10 min)
+================================================================================
+
+ENTRY #19
+Time: 2022-06-13 00:50:00
+Direction: LONG
+ATR Current: 1.291865
+ATR Increment: +0.019784 (Filtered)
+Angle Current: 52.43°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #19
+Time: 2022-06-13 01:40:00
+Exit Reason: STOP_LOSS
+P&L: -621.34
+Pips: -84268.7
+Duration: 10 bars (50 min)
+================================================================================
+
+ENTRY #20
+Time: 2022-06-28 05:05:00
+Direction: LONG
+ATR Current: 0.592361
+ATR Change: -0.061986 (Decrement Filter OFF)
+Angle Current: 75.62°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #20
+Time: 2022-06-28 10:50:00
+Exit Reason: STOP_LOSS
+P&L: -922.69
+Pips: -28473.6
+Duration: 69 bars (345 min)
+================================================================================
+
+ENTRY #21
+Time: 2022-07-07 06:45:00
+Direction: LONG
+ATR Current: 1.092670
+ATR Change: -0.019186 (Decrement Filter OFF)
+Angle Current: 80.05°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #21
+Time: 2022-07-07 12:45:00
+Exit Reason: STOP_LOSS
+P&L: -582.70
+Pips: -69326.7
+Duration: 72 bars (360 min)
+================================================================================
+
+ENTRY #22
+Time: 2022-07-13 07:05:00
+Direction: LONG
+ATR Current: 1.310659
+ATR Change: -0.028306 (Decrement Filter OFF)
+Angle Current: 84.05°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #22
+Time: 2022-07-13 12:30:00
+Exit Reason: STOP_LOSS
+P&L: -695.80
+Pips: -112006.6
+Duration: 65 bars (325 min)
+================================================================================
+
+ENTRY #23
+Time: 2022-07-27 11:00:00
+Direction: LONG
+ATR Current: 1.063070
+ATR Increment: +0.243454 (Filtered)
+Angle Current: 85.76°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #23
+Time: 2022-07-27 13:40:00
+Exit Reason: STOP_LOSS
+P&L: -629.38
+Pips: -64280.7
+Duration: 32 bars (160 min)
+================================================================================
+
+ENTRY #24
+Time: 2022-07-28 03:55:00
+Direction: LONG
+ATR Current: 0.849760
+ATR Change: -0.100897 (Decrement Filter OFF)
+Angle Current: 77.99°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #24
+Time: 2022-07-28 07:05:00
+Exit Reason: TAKE_PROFIT
+P&L: 1146.69
+Pips: 56302.4
+Duration: 38 bars (190 min)
+================================================================================
+
+ENTRY #25
+Time: 2022-07-29 01:30:00
+Direction: LONG
+ATR Current: 0.832801
+ATR Change: -0.040928 (Decrement Filter OFF)
+Angle Current: 56.31°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #25
+Time: 2022-07-29 03:20:00
+Exit Reason: TAKE_PROFIT
+P&L: 1110.64
+Pips: 44822.0
+Duration: 22 bars (110 min)
+================================================================================
+
+ENTRY #26
+Time: 2022-08-22 18:50:00
+Direction: LONG
+ATR Current: 0.765334
+ATR Change: -0.063616 (Decrement Filter OFF)
+Angle Current: 81.38°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #26
+Time: 2022-08-23 08:15:00
+Exit Reason: TAKE_PROFIT
+P&L: 998.93
+Pips: 48896.7
+Duration: 161 bars (805 min)
+================================================================================
+
+ENTRY #27
+Time: 2022-09-07 12:00:00
+Direction: LONG
+ATR Current: 1.337183
+ATR Increment: +0.033011 (Filtered)
+Angle Current: 86.08°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #27
+Time: 2022-09-07 14:30:00
+Exit Reason: TAKE_PROFIT
+P&L: 883.17
+Pips: 84228.2
+Duration: 30 bars (150 min)
+================================================================================
+
+ENTRY #28
+Time: 2022-09-14 11:05:00
+Direction: LONG
+ATR Current: 1.188652
+ATR Increment: +0.156289 (Filtered)
+Angle Current: 85.03°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #28
+Time: 2022-09-14 17:55:00
+Exit Reason: STOP_LOSS
+P&L: -670.89
+Pips: -72286.5
+Duration: 82 bars (410 min)
+================================================================================
+
+ENTRY #29
+Time: 2022-09-16 17:30:00
+Direction: LONG
+ATR Current: 1.206624
+ATR Change: -0.078810 (Decrement Filter OFF)
+Angle Current: 84.05°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #29
+Time: 2022-09-19 02:05:00
+Exit Reason: STOP_LOSS
+P&L: -661.98
+Pips: -76466.2
+Duration: 679 bars (3395 min)
+================================================================================
+
+ENTRY #30
+Time: 2022-09-27 13:30:00
+Direction: LONG
+ATR Current: 1.989570
+ATR Increment: +0.142406 (Filtered)
+Angle Current: 88.03°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #30
+Time: 2022-09-28 00:45:00
+Exit Reason: STOP_LOSS
+P&L: -1233.31
+Pips: -127495.7
+Duration: 135 bars (675 min)
+================================================================================
+
+ENTRY #31
+Time: 2022-11-01 07:50:00
+Direction: LONG
+ATR Current: 1.622408
+ATR Increment: +0.016836 (Filtered)
+Angle Current: 86.49°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #31
+Time: 2022-11-01 11:25:00
+Exit Reason: TAKE_PROFIT
+P&L: 1064.57
+Pips: 95325.9
+Duration: 43 bars (215 min)
+================================================================================
+
+ENTRY #32
+Time: 2022-11-02 01:55:00
+Direction: LONG
+ATR Current: 0.983401
+ATR Change: -0.100140 (Decrement Filter OFF)
+Angle Current: 45.00°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #32
+Time: 2022-11-02 10:35:00
+Exit Reason: TAKE_PROFIT
+P&L: 1344.42
+Pips: 48866.0
+Duration: 104 bars (520 min)
+================================================================================
+
+ENTRY #33
+Time: 2022-11-15 11:45:00
+Direction: LONG
+ATR Current: 1.223744
+ATR Change: -0.074370 (Decrement Filter OFF)
+Angle Current: 82.69°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #33
+Time: 2022-11-15 13:30:00
+Exit Reason: TAKE_PROFIT
+P&L: 805.43
+Pips: 89912.6
+Duration: 21 bars (105 min)
+================================================================================
+
+ENTRY #34
+Time: 2022-11-28 11:50:00
+Direction: LONG
+ATR Current: 1.266745
+ATR Increment: +0.152687 (Filtered)
+Angle Current: 74.88°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #34
+Time: 2022-11-28 13:15:00
+Exit Reason: STOP_LOSS
+P&L: -609.04
+Pips: -81367.5
+Duration: 17 bars (85 min)
+================================================================================
+
+ENTRY #35
+Time: 2022-12-01 01:45:00
+Direction: LONG
+ATR Current: 1.202229
+ATR Change: -0.077672 (Decrement Filter OFF)
+Angle Current: 83.44°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #35
+Time: 2022-12-01 13:00:00
+Exit Reason: TAKE_PROFIT
+P&L: 837.45
+Pips: 69277.7
+Duration: 135 bars (675 min)
+================================================================================
+
+ENTRY #36
+Time: 2023-01-03 01:50:00
+Direction: LONG
+ATR Current: 1.589738
+ATR Change: -0.045686 (Decrement Filter OFF)
+Angle Current: 87.49°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #36
+Time: 2023-01-03 03:00:00
+Exit Reason: TAKE_PROFIT
+P&L: 1036.33
+Pips: 93752.6
+Duration: 14 bars (70 min)
+================================================================================
+
+ENTRY #37
+Time: 2023-01-03 20:45:00
+Direction: LONG
+ATR Current: 0.936218
+ATR Change: -0.038280 (Decrement Filter OFF)
+Angle Current: 81.63°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #37
+Time: 2023-01-04 01:50:00
+Exit Reason: TAKE_PROFIT
+P&L: 1227.08
+Pips: 55287.8
+Duration: 61 bars (305 min)
+================================================================================
+
+ENTRY #38
+Time: 2023-01-11 21:20:00
+Direction: LONG
+ATR Current: 0.584400
+ATR Change: -0.149685 (Decrement Filter OFF)
+Angle Current: 68.20°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #38
+Time: 2023-01-12 01:55:00
+Exit Reason: TAKE_PROFIT
+P&L: 1136.58
+Pips: 33056.0
+Duration: 55 bars (275 min)
+================================================================================
+
+ENTRY #39
+Time: 2023-01-12 06:25:00
+Direction: LONG
+ATR Current: 0.669409
+ATR Change: -0.039710 (Decrement Filter OFF)
+Angle Current: 30.96°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #39
+Time: 2023-01-12 07:35:00
+Exit Reason: STOP_LOSS
+P&L: -1053.70
+Pips: -38094.1
+Duration: 14 bars (70 min)
+================================================================================
+
+ENTRY #40
+Time: 2023-01-20 02:45:00
+Direction: LONG
+ATR Current: 1.018916
+ATR Change: -0.003631 (Decrement Filter OFF)
+Angle Current: 82.30°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #40
+Time: 2023-01-20 04:55:00
+Exit Reason: STOP_LOSS
+P&L: -546.51
+Pips: -70889.2
+Duration: 26 bars (130 min)
+================================================================================
+
+ENTRY #41
+Time: 2023-02-02 02:20:00
+Direction: LONG
+ATR Current: 1.417017
+ATR Change: -0.238147 (Decrement Filter OFF)
+Angle Current: -26.57°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #41
+Time: 2023-02-02 13:50:00
+Exit Reason: STOP_LOSS
+P&L: -642.66
+Pips: -64420.2
+Duration: 138 bars (690 min)
+================================================================================
+
+ENTRY #42
+Time: 2023-02-17 20:05:00
+Direction: LONG
+ATR Current: 0.919165
+ATR Change: -0.079251 (Decrement Filter OFF)
+Angle Current: 81.63°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #42
+Time: 2023-02-20 00:00:00
+Exit Reason: STOP_LOSS
+P&L: -983.25
+Pips: -59341.7
+Duration: 623 bars (3115 min)
+================================================================================
+
+ENTRY #43
+Time: 2023-02-20 10:05:00
+Direction: LONG
+ATR Current: 1.085192
+ATR Change: -0.036541 (Decrement Filter OFF)
+Angle Current: 75.26°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #43
+Time: 2023-02-21 03:15:00
+Exit Reason: STOP_LOSS
+P&L: -539.34
+Pips: -58951.9
+Duration: 206 bars (1030 min)
+================================================================================
+
+ENTRY #44
+Time: 2023-02-23 05:35:00
+Direction: LONG
+ATR Current: 0.684674
+ATR Increment: +0.040192 (Filtered)
+Angle Current: 75.26°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #44
+Time: 2023-02-23 06:30:00
+Exit Reason: TAKE_PROFIT
+P&L: 936.08
+Pips: 38203.3
+Duration: 11 bars (55 min)
+================================================================================
+
+ENTRY #45
+Time: 2023-03-05 23:15:00
+Direction: LONG
+ATR Current: 0.926581
+ATR Increment: +0.044019 (Filtered)
+Angle Current: 41.99°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #45
+Time: 2023-03-06 11:15:00
+Exit Reason: STOP_LOSS
+P&L: -871.92
+Pips: -53315.8
+Duration: 144 bars (720 min)
+================================================================================
+
+ENTRY #46
+Time: 2023-03-20 00:20:00
+Direction: LONG
+ATR Current: 1.577945
+ATR Change: -0.119285 (Decrement Filter OFF)
+Angle Current: 86.03°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #46
+Time: 2023-03-20 01:00:00
+Exit Reason: STOP_LOSS
+P&L: -874.08
+Pips: -95379.4
+Duration: 8 bars (40 min)
+================================================================================
+
+ENTRY #47
+Time: 2023-03-22 11:10:00
+Direction: LONG
+ATR Current: 1.607064
+ATR Change: -0.080759 (Decrement Filter OFF)
+Angle Current: 83.13°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #47
+Time: 2023-03-22 18:00:00
+Exit Reason: TAKE_PROFIT
+P&L: 1123.59
+Pips: 192579.4
+Duration: 82 bars (410 min)
+================================================================================
+
+ENTRY #48
+Time: 2023-03-31 03:50:00
+Direction: LONG
+ATR Current: 0.697254
+ATR Change: -0.083090 (Decrement Filter OFF)
+Angle Current: 74.88°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #48
+Time: 2023-03-31 07:25:00
+Exit Reason: STOP_LOSS
+P&L: -705.53
+Pips: -41372.5
+Duration: 43 bars (215 min)
+================================================================================
+
+ENTRY #49
+Time: 2023-05-09 08:05:00
+Direction: LONG
+ATR Current: 1.075621
+ATR Change: -0.188322 (Decrement Filter OFF)
+Angle Current: 41.99°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #49
+Time: 2023-05-09 11:00:00
+Exit Reason: TAKE_PROFIT
+P&L: 1448.31
+Pips: 60093.8
+Duration: 35 bars (175 min)
+================================================================================
+
+ENTRY #50
+Time: 2023-05-10 20:25:00
+Direction: LONG
+ATR Current: 0.711297
+ATR Change: -0.174742 (Decrement Filter OFF)
+Angle Current: 73.61°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #50
+Time: 2023-05-10 20:55:00
+Exit Reason: STOP_LOSS
+P&L: -706.17
+Pips: -21663.0
+Duration: 6 bars (30 min)
+================================================================================
+
+ENTRY #51
+Time: 2023-05-15 04:00:00
+Direction: LONG
+ATR Current: 0.688356
+ATR Change: -0.116710 (Decrement Filter OFF)
+Angle Current: 54.46°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #51
+Time: 2023-05-15 05:30:00
+Exit Reason: TAKE_PROFIT
+P&L: 1345.29
+Pips: 41566.4
+Duration: 18 bars (90 min)
+================================================================================
+
+ENTRY #52
+Time: 2023-06-02 05:30:00
+Direction: LONG
+ATR Current: 0.865048
+ATR Increment: +0.128127 (Filtered)
+Angle Current: 79.70°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #52
+Time: 2023-06-02 12:30:00
+Exit Reason: STOP_LOSS
+P&L: -888.54
+Pips: -23000.5
+Duration: 84 bars (420 min)
+================================================================================
+
+ENTRY #53
+Time: 2023-06-07 02:15:00
+Direction: LONG
+ATR Current: 0.900344
+ATR Increment: +0.012380 (Filtered)
+Angle Current: 82.50°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #53
+Time: 2023-06-07 06:30:00
+Exit Reason: STOP_LOSS
+P&L: -978.31
+Pips: -50153.4
+Duration: 51 bars (255 min)
+================================================================================
+
+ENTRY #54
+Time: 2023-06-09 07:25:00
+Direction: LONG
+ATR Current: 0.930101
+ATR Increment: +0.049641 (Filtered)
+Angle Current: 83.99°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #54
+Time: 2023-06-09 12:30:00
+Exit Reason: TAKE_PROFIT
+P&L: 1307.13
+Pips: 23899.0
+Duration: 61 bars (305 min)
+================================================================================
+
+ENTRY #55
+Time: 2023-06-12 11:25:00
+Direction: LONG
+ATR Current: 1.065386
+ATR Increment: +0.184022 (Filtered)
+Angle Current: 86.45°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #55
+Time: 2023-06-12 13:25:00
+Exit Reason: STOP_LOSS
+P&L: -654.42
+Pips: -63903.9
+Duration: 24 bars (120 min)
+================================================================================
+
+ENTRY #56
+Time: 2023-06-15 18:45:00
+Direction: LONG
+ATR Current: 0.775776
+ATR Change: -0.132465 (Decrement Filter OFF)
+Angle Current: -38.66°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #56
+Time: 2023-06-16 06:30:00
+Exit Reason: TAKE_PROFIT
+P&L: 1084.51
+Pips: 47392.2
+Duration: 141 bars (705 min)
+================================================================================
+
+ENTRY #57
+Time: 2023-07-02 22:30:00
+Direction: LONG
+ATR Current: 0.577740
+ATR Change: -0.148259 (Decrement Filter OFF)
+Angle Current: 47.73°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #57
+Time: 2023-07-03 02:35:00
+Exit Reason: STOP_LOSS
+P&L: -824.95
+Pips: -35227.4
+Duration: 49 bars (245 min)
+================================================================================
+
+ENTRY #58
+Time: 2023-07-11 12:10:00
+Direction: LONG
+ATR Current: 1.019728
+ATR Increment: +0.132769 (Filtered)
+Angle Current: 66.50°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #58
+Time: 2023-07-11 12:35:00
+Exit Reason: STOP_LOSS
+P&L: -1037.76
+Pips: -64447.3
+Duration: 5 bars (25 min)
+================================================================================
+
+ENTRY #59
+Time: 2023-07-17 19:55:00
+Direction: LONG
+ATR Current: 0.536286
+ATR Change: -0.028959 (Decrement Filter OFF)
+Angle Current: 78.47°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #59
+Time: 2023-07-18 01:25:00
+Exit Reason: TAKE_PROFIT
+P&L: 1081.76
+Pips: 33287.1
+Duration: 66 bars (330 min)
+================================================================================
+
+ENTRY #60
+Time: 2023-08-23 02:50:00
+Direction: LONG
+ATR Current: 0.639563
+ATR Change: -0.033327 (Decrement Filter OFF)
+Angle Current: -73.14°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #60
+Time: 2023-08-23 12:25:00
+Exit Reason: TAKE_PROFIT
+P&L: 1388.15
+Pips: 47604.4
+Duration: 115 bars (575 min)
+================================================================================
+
+ENTRY #61
+Time: 2023-08-23 19:20:00
+Direction: LONG
+ATR Current: 0.535178
+ATR Change: -0.087550 (Decrement Filter OFF)
+Angle Current: 67.38°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #61
+Time: 2023-08-23 20:45:00
+Exit Reason: STOP_LOSS
+P&L: -833.49
+Pips: -27751.8
+Duration: 17 bars (85 min)
+================================================================================
+
+ENTRY #62
+Time: 2023-09-14 19:00:00
+Direction: LONG
+ATR Current: 0.568388
+ATR Change: -0.043607 (Decrement Filter OFF)
+Angle Current: 75.62°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #62
+Time: 2023-09-15 01:30:00
+Exit Reason: TAKE_PROFIT
+P&L: 1114.36
+Pips: 35966.1
+Duration: 78 bars (390 min)
+================================================================================
+
+ENTRY #63
+Time: 2023-09-15 19:00:00
+Direction: LONG
+ATR Current: 0.492709
+ATR Change: -0.068891 (Decrement Filter OFF)
+Angle Current: 63.43°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #63
+Time: 2023-09-18 02:35:00
+Exit Reason: TAKE_PROFIT
+P&L: 1293.04
+Pips: 29022.9
+Duration: 667 bars (3335 min)
+================================================================================
+
+ENTRY #64
+Time: 2023-09-22 09:25:00
+Direction: LONG
+ATR Current: 0.636337
+ATR Increment: +0.038192 (Filtered)
+Angle Current: 77.20°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #64
+Time: 2023-09-25 02:20:00
+Exit Reason: STOP_LOSS
+P&L: -1051.06
+Pips: -38263.4
+Duration: 779 bars (3895 min)
+================================================================================
+
+ENTRY #65
+Time: 2023-10-10 06:00:00
+Direction: LONG
+ATR Current: 0.742165
+ATR Increment: +0.061092 (Filtered)
+Angle Current: 82.96°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #65
+Time: 2023-10-10 06:15:00
+Exit Reason: STOP_LOSS
+P&L: -839.95
+Pips: -47721.6
+Duration: 3 bars (15 min)
+================================================================================
+
+ENTRY #66
+Time: 2023-10-10 17:45:00
+Direction: LONG
+ATR Current: 1.299874
+ATR Increment: +0.111616 (Filtered)
+Angle Current: 84.85°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #66
+Time: 2023-10-11 08:05:00
+Exit Reason: TAKE_PROFIT
+P&L: 868.92
+Pips: 69151.3
+Duration: 172 bars (860 min)
+================================================================================
+
+ENTRY #67
+Time: 2023-11-14 01:55:00
+Direction: LONG
+ATR Current: 0.690559
+ATR Change: -0.014824 (Decrement Filter OFF)
+Angle Current: 47.73°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #67
+Time: 2023-11-14 13:30:00
+Exit Reason: STOP_LOSS
+P&L: -974.26
+Pips: 102844.4
+Duration: 139 bars (695 min)
+================================================================================
+
+ENTRY #68
+Time: 2023-11-14 23:45:00
+Direction: LONG
+ATR Current: 0.419986
+ATR Increment: +0.039352 (Filtered)
+Angle Current: 75.26°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #68
+Time: 2023-11-15 03:05:00
+Exit Reason: TAKE_PROFIT
+P&L: 1179.96
+Pips: 20300.1
+Duration: 40 bars (200 min)
+================================================================================
+
+ENTRY #69
+Time: 2023-11-17 11:45:00
+Direction: LONG
+ATR Current: 1.235042
+ATR Increment: +0.170325 (Filtered)
+Angle Current: 86.71°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #69
+Time: 2023-11-17 14:35:00
+Exit Reason: STOP_LOSS
+P&L: -740.77
+Pips: -73500.4
+Duration: 34 bars (170 min)
+================================================================================
+
+ENTRY #70
+Time: 2023-11-20 21:40:00
+Direction: LONG
+ATR Current: 0.510245
+ATR Change: -0.130923 (Decrement Filter OFF)
+Angle Current: 11.31°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #70
+Time: 2023-11-20 23:15:00
+Exit Reason: TAKE_PROFIT
+P&L: 1382.64
+Pips: 22597.6
+Duration: 19 bars (95 min)
+================================================================================
+
+ENTRY #71
+Time: 2023-12-01 20:00:00
+Direction: LONG
+ATR Current: 1.663643
+ATR Increment: +0.033260 (Filtered)
+Angle Current: 86.13°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #71
+Time: 2023-12-03 23:15:00
+Exit Reason: TAKE_PROFIT
+P&L: 1091.37
+Pips: 241963.6
+Duration: 615 bars (3075 min)
+================================================================================
+
+ENTRY #72
+Time: 2023-12-07 11:35:00
+Direction: LONG
+ATR Current: 1.180947
+ATR Increment: +0.258790 (Filtered)
+Angle Current: 85.67°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #72
+Time: 2023-12-07 13:40:00
+Exit Reason: TAKE_PROFIT
+P&L: 797.62
+Pips: 52290.5
+Duration: 25 bars (125 min)
+================================================================================
+
+ENTRY #73
+Time: 2023-12-12 01:35:00
+Direction: LONG
+ATR Current: 1.092290
+ATR Change: -0.133342 (Decrement Filter OFF)
+Angle Current: -65.56°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #73
+Time: 2023-12-12 13:10:00
+Exit Reason: TAKE_PROFIT
+P&L: 1549.98
+Pips: 64627.1
+Duration: 139 bars (695 min)
+================================================================================
+
+ENTRY #74
+Time: 2023-12-15 12:00:00
+Direction: LONG
+ATR Current: 1.140332
+ATR Change: -0.071250 (Decrement Filter OFF)
+Angle Current: 86.19°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #74
+Time: 2023-12-15 13:30:00
+Exit Reason: STOP_LOSS
+P&L: -659.15
+Pips: -77303.3
+Duration: 18 bars (90 min)
+================================================================================
+
+ENTRY #75
+Time: 2023-12-22 06:20:00
+Direction: LONG
+ATR Current: 0.801798
+ATR Change: -0.040693 (Decrement Filter OFF)
+Angle Current: 80.84°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #75
+Time: 2023-12-22 09:35:00
+Exit Reason: TAKE_PROFIT
+P&L: 1078.34
+Pips: 48882.0
+Duration: 39 bars (195 min)
+================================================================================
+
+ENTRY #76
+Time: 2024-01-23 07:50:00
+Direction: LONG
+ATR Current: 1.835485
+ATR Change: -0.130378 (Decrement Filter OFF)
+Angle Current: 85.60°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #76
+Time: 2024-01-23 14:35:00
+Exit Reason: STOP_LOSS
+P&L: -969.97
+Pips: -86904.9
+Duration: 81 bars (405 min)
+================================================================================
+
+ENTRY #77
+Time: 2024-01-31 09:40:00
+Direction: LONG
+ATR Current: 0.784143
+ATR Change: -0.135249 (Decrement Filter OFF)
+Angle Current: 68.96°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #77
+Time: 2024-01-31 14:30:00
+Exit Reason: TAKE_PROFIT
+P&L: 1051.39
+Pips: 56908.6
+Duration: 58 bars (290 min)
+================================================================================
+
+ENTRY #78
+Time: 2024-02-09 03:55:00
+Direction: LONG
+ATR Current: 0.435812
+ATR Increment: +0.069398 (Filtered)
+Angle Current: 76.61°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #78
+Time: 2024-02-09 08:15:00
+Exit Reason: STOP_LOSS
+P&L: -1056.46
+Pips: -22208.1
+Duration: 52 bars (260 min)
+================================================================================
+
+ENTRY #79
+Time: 2024-02-15 23:00:00
+Direction: LONG
+ATR Current: 0.501267
+ATR Increment: +0.014660 (Filtered)
+Angle Current: 73.61°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #79
+Time: 2024-02-16 12:05:00
+Exit Reason: TAKE_PROFIT
+P&L: 1040.47
+Pips: 29237.3
+Duration: 157 bars (785 min)
+================================================================================
+
+ENTRY #80
+Time: 2024-02-23 20:15:00
+Direction: LONG
+ATR Current: 0.844249
+ATR Change: -0.077492 (Decrement Filter OFF)
+Angle Current: 79.32°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #80
+Time: 2024-02-26 00:25:00
+Exit Reason: STOP_LOSS
+P&L: -881.82
+Pips: -54742.5
+Duration: 626 bars (3130 min)
+================================================================================
+
+ENTRY #81
+Time: 2024-02-29 05:20:00
+Direction: LONG
+ATR Current: 0.437902
+ATR Increment: +0.034348 (Filtered)
+Angle Current: 76.61°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #81
+Time: 2024-02-29 10:25:00
+Exit Reason: STOP_LOSS
+P&L: -1024.22
+Pips: -28979.0
+Duration: 61 bars (305 min)
+================================================================================
+
+ENTRY #82
+Time: 2024-02-29 20:35:00
+Direction: LONG
+ATR Current: 0.633213
+ATR Change: -0.061034 (Decrement Filter OFF)
+Angle Current: 68.20°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #82
+Time: 2024-03-01 07:15:00
+Exit Reason: TAKE_PROFIT
+P&L: 1285.77
+Pips: 24767.9
+Duration: 128 bars (640 min)
+================================================================================
+
+ENTRY #83
+Time: 2024-03-05 00:30:00
+Direction: LONG
+ATR Current: 0.764177
+ATR Change: -0.045503 (Decrement Filter OFF)
+Angle Current: 80.98°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #83
+Time: 2024-03-05 01:30:00
+Exit Reason: STOP_LOSS
+P&L: -825.76
+Pips: -46841.8
+Duration: 12 bars (60 min)
+================================================================================
+
+ENTRY #84
+Time: 2024-03-18 20:15:00
+Direction: LONG
+ATR Current: 0.588216
+ATR Change: -0.091394 (Decrement Filter OFF)
+Angle Current: 76.29°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #84
+Time: 2024-03-19 06:00:00
+Exit Reason: STOP_LOSS
+P&L: -908.09
+Pips: -41732.2
+Duration: 117 bars (585 min)
+================================================================================
+
+ENTRY #85
+Time: 2024-03-25 16:00:00
+Direction: LONG
+ATR Current: 1.390186
+ATR Change: -0.106229 (Decrement Filter OFF)
+Angle Current: 83.13°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #85
+Time: 2024-03-26 01:40:00
+Exit Reason: STOP_LOSS
+P&L: -731.58
+Pips: -78901.9
+Duration: 116 bars (580 min)
+================================================================================
+
+ENTRY #86
+Time: 2024-04-02 04:20:00
+Direction: LONG
+ATR Current: 1.029368
+ATR Change: -0.132444 (Decrement Filter OFF)
+Angle Current: -77.20°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #86
+Time: 2024-04-02 04:45:00
+Exit Reason: TAKE_PROFIT
+P&L: 1462.18
+Pips: 50806.3
+Duration: 5 bars (25 min)
+================================================================================
+
+ENTRY #87
+Time: 2024-04-02 05:55:00
+Direction: LONG
+ATR Current: 1.312743
+ATR Increment: +0.037006 (Filtered)
+Angle Current: 85.83°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #87
+Time: 2024-04-02 08:05:00
+Exit Reason: TAKE_PROFIT
+P&L: 859.28
+Pips: 79122.6
+Duration: 26 bars (130 min)
+================================================================================
+
+ENTRY #88
+Time: 2024-05-03 19:35:00
+Direction: LONG
+ATR Current: 1.588429
+ATR Change: -0.158282 (Decrement Filter OFF)
+Angle Current: 85.79°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #88
+Time: 2024-05-06 02:00:00
+Exit Reason: TAKE_PROFIT
+P&L: 1045.48
+Pips: 134365.7
+Duration: 653 bars (3265 min)
+================================================================================
+
+ENTRY #89
+Time: 2024-05-06 07:10:00
+Direction: LONG
+ATR Current: 1.462963
+ATR Change: -0.030129 (Decrement Filter OFF)
+Angle Current: -73.14°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #89
+Time: 2024-05-06 07:40:00
+Exit Reason: TAKE_PROFIT
+P&L: 1071.93
+Pips: 81920.4
+Duration: 6 bars (30 min)
+================================================================================
+
+ENTRY #90
+Time: 2024-05-06 09:25:00
+Direction: LONG
+ATR Current: 1.502641
+ATR Change: -0.037441 (Decrement Filter OFF)
+Angle Current: 86.03°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #90
+Time: 2024-05-06 12:45:00
+Exit Reason: TAKE_PROFIT
+P&L: 1022.72
+Pips: 83973.6
+Duration: 40 bars (200 min)
+================================================================================
+
+ENTRY #91
+Time: 2024-05-15 01:05:00
+Direction: LONG
+ATR Current: 0.880118
+ATR Increment: +0.077298 (Filtered)
+Angle Current: 83.52°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #91
+Time: 2024-05-15 07:10:00
+Exit Reason: TAKE_PROFIT
+P&L: 1194.15
+Pips: 54998.8
+Duration: 73 bars (365 min)
+================================================================================
+
+ENTRY #92
+Time: 2024-05-17 08:45:00
+Direction: LONG
+ATR Current: 1.389228
+ATR Change: -0.023298 (Decrement Filter OFF)
+Angle Current: 79.88°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #92
+Time: 2024-05-17 12:45:00
+Exit Reason: TAKE_PROFIT
+P&L: 949.00
+Pips: 80407.7
+Duration: 48 bars (240 min)
+================================================================================
+
+ENTRY #93
+Time: 2024-05-24 12:30:00
+Direction: LONG
+ATR Current: 2.081117
+ATR Increment: +0.266795 (Filtered)
+Angle Current: 85.83°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #93
+Time: 2024-05-27 13:45:00
+Exit Reason: TAKE_PROFIT
+P&L: 1352.73
+Pips: 154388.8
+Duration: 879 bars (4395 min)
+================================================================================
+
+ENTRY #94
+Time: 2024-06-10 23:55:00
+Direction: LONG
+ATR Current: 0.535235
+ATR Change: -0.056669 (Decrement Filter OFF)
+Angle Current: 66.50°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #94
+Time: 2024-06-11 01:00:00
+Exit Reason: STOP_LOSS
+P&L: -1075.42
+Pips: -19952.3
+Duration: 13 bars (65 min)
+================================================================================
+
+ENTRY #95
+Time: 2024-06-11 23:45:00
+Direction: LONG
+ATR Current: 0.810788
+ATR Increment: +0.113891 (Filtered)
+Angle Current: 50.19°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #95
+Time: 2024-06-12 12:30:00
+Exit Reason: TAKE_PROFIT
+P&L: 1218.02
+Pips: 94942.1
+Duration: 153 bars (765 min)
+================================================================================
+
+ENTRY #96
+Time: 2024-06-14 09:10:00
+Direction: LONG
+ATR Current: 1.454820
+ATR Change: -0.284972 (Decrement Filter OFF)
+Angle Current: 80.84°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #96
+Time: 2024-06-14 10:20:00
+Exit Reason: TAKE_PROFIT
+P&L: 976.63
+Pips: 104751.8
+Duration: 14 bars (70 min)
+================================================================================
+
+ENTRY #97
+Time: 2024-06-18 23:00:00
+Direction: LONG
+ATR Current: 0.702842
+ATR Change: -0.069518 (Decrement Filter OFF)
+Angle Current: 81.12°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #97
+Time: 2024-06-19 08:00:00
+Exit Reason: TAKE_PROFIT
+P&L: 1370.54
+Pips: 37821.6
+Duration: 108 bars (540 min)
+================================================================================
+
+ENTRY #98
+Time: 2024-06-19 22:20:00
+Direction: LONG
+ATR Current: 1.008456
+ATR Increment: +0.048561 (Filtered)
+Angle Current: 80.22°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #98
+Time: 2024-06-20 01:35:00
+Exit Reason: TAKE_PROFIT
+P&L: 1380.99
+Pips: 58965.4
+Duration: 39 bars (195 min)
+================================================================================
+
+ENTRY #99
+Time: 2024-07-31 08:05:00
+Direction: LONG
+ATR Current: 1.821493
+ATR Change: -0.099402 (Decrement Filter OFF)
+Angle Current: 85.28°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #99
+Time: 2024-07-31 18:40:00
+Exit Reason: TAKE_PROFIT
+P&L: 1204.97
+Pips: 133035.1
+Duration: 127 bars (635 min)
+================================================================================
+
+ENTRY #100
+Time: 2024-08-20 01:40:00
+Direction: LONG
+ATR Current: 1.692617
+ATR Increment: +0.028481 (Filtered)
+Angle Current: 85.94°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #100
+Time: 2024-08-20 08:00:00
+Exit Reason: TAKE_PROFIT
+P&L: 1148.20
+Pips: 109873.8
+Duration: 76 bars (380 min)
+================================================================================
+
+ENTRY #101
+Time: 2024-08-28 00:55:00
+Direction: LONG
+ATR Current: 0.859820
+ATR Change: -0.048917 (Decrement Filter OFF)
+Angle Current: 69.68°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #101
+Time: 2024-08-28 01:05:00
+Exit Reason: STOP_LOSS
+P&L: -873.84
+Pips: -32748.2
+Duration: 2 bars (10 min)
+================================================================================
+
+ENTRY #102
+Time: 2024-08-29 05:10:00
+Direction: LONG
+ATR Current: 1.200846
+ATR Increment: +0.054138 (Filtered)
+Angle Current: 82.79°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #102
+Time: 2024-08-29 09:50:00
+Exit Reason: TAKE_PROFIT
+P&L: 819.55
+Pips: 75741.5
+Duration: 56 bars (280 min)
+================================================================================
+
+ENTRY #103
+Time: 2024-09-10 18:10:00
+Direction: LONG
+ATR Current: 1.234924
+ATR Change: -0.045152 (Decrement Filter OFF)
+Angle Current: 84.23°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #103
+Time: 2024-09-11 01:45:00
+Exit Reason: TAKE_PROFIT
+P&L: 798.70
+Pips: 68800.8
+Duration: 91 bars (455 min)
+================================================================================
+
+ENTRY #104
+Time: 2024-09-13 06:10:00
+Direction: LONG
+ATR Current: 1.494656
+ATR Increment: +0.197244 (Filtered)
+Angle Current: -87.17°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #104
+Time: 2024-09-13 13:05:00
+Exit Reason: TAKE_PROFIT
+P&L: 1233.53
+Pips: 83453.4
+Duration: 83 bars (415 min)
+================================================================================
+
+ENTRY #105
+Time: 2024-09-13 18:45:00
+Direction: LONG
+ATR Current: 1.550820
+ATR Change: -0.092757 (Decrement Filter OFF)
+Angle Current: 85.03°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #105
+Time: 2024-09-17 09:40:00
+Exit Reason: STOP_LOSS
+P&L: -885.87
+Pips: -89508.2
+Duration: 1043 bars (5215 min)
+================================================================================
+
+ENTRY #106
+Time: 2024-10-17 07:30:00
+Direction: LONG
+ATR Current: 1.693802
+ATR Change: -0.077310 (Decrement Filter OFF)
+Angle Current: 83.80°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #106
+Time: 2024-10-17 14:35:00
+Exit Reason: TAKE_PROFIT
+P&L: 1147.97
+Pips: 123112.0
+Duration: 85 bars (425 min)
+================================================================================
+
+ENTRY #107
+Time: 2024-11-21 20:20:00
+Direction: LONG
+ATR Current: 1.378455
+ATR Change: -0.112004 (Decrement Filter OFF)
+Angle Current: 79.51°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #107
+Time: 2024-11-22 01:50:00
+Exit Reason: TAKE_PROFIT
+P&L: 980.00
+Pips: 81015.5
+Duration: 66 bars (330 min)
+================================================================================
+
+ENTRY #108
+Time: 2024-11-28 05:50:00
+Direction: LONG
+ATR Current: 1.512342
+ATR Change: -0.001253 (Decrement Filter OFF)
+Angle Current: 85.03°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #108
+Time: 2024-11-28 08:50:00
+Exit Reason: TAKE_PROFIT
+P&L: 1051.02
+Pips: 97676.6
+Duration: 36 bars (180 min)
+================================================================================
+
+ENTRY #109
+Time: 2024-11-29 08:45:00
+Direction: LONG
+ATR Current: 1.957158
+ATR Increment: +0.158715 (Filtered)
+Angle Current: 84.90°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #109
+Time: 2024-12-01 23:25:00
+Exit Reason: STOP_LOSS
+P&L: -1103.72
+Pips: -117421.6
+Duration: 752 bars (3760 min)
+================================================================================
+
+ENTRY #110
+Time: 2024-12-23 07:50:00
+Direction: LONG
+ATR Current: 1.486429
+ATR Change: -0.137968 (Decrement Filter OFF)
+Angle Current: -78.69°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #110
+Time: 2024-12-23 10:15:00
+Exit Reason: STOP_LOSS
+P&L: -697.89
+Pips: -91314.3
+Duration: 29 bars (145 min)
+================================================================================
+
+ENTRY #111
+Time: 2024-12-30 04:15:00
+Direction: LONG
+ATR Current: 1.146303
+ATR Change: -0.011208 (Decrement Filter OFF)
+Angle Current: 83.05°
+Angle Filter: DISABLED
+Bars to Entry: 1
+--------------------------------------------------
+
+EXIT #111
+Time: 2024-12-30 07:00:00
+Exit Reason: STOP_LOSS
+P&L: -1255.67
+Pips: -71263.0
+Duration: 33 bars (165 min)
+================================================================================
+
+
+================================================================================
+SUMMARY
+================================================================================
+Total Trades: 111
+Winning Trades: 61
+Losing Trades: 50
+Win Rate: 54.95%
+Total P&L: 25464.31
+Average Win: 1111.49
+Average Loss: -846.73
+================================================================================
