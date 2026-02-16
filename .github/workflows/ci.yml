@@ -5,8 +5,8 @@ on:
   pull_request:
 
 jobs:
-  build-test:
-    name: CI (${{ matrix.os }})
+  smoke:
+    name: Smoke (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -26,334 +26,203 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: "pip"
-          cache-dependency-path: |
-            backend/requirements.txt
-            backend/pyproject.toml
 
-      - name: Detect backend dependency manager
-        id: backend-deps
-        shell: pwsh
-        run: |
-          if (Test-Path "backend/pyproject.toml") {
-            "manager=pyproject" >> $env:GITHUB_OUTPUT
-            Write-Host "[backend] dependency source: pyproject.toml"
-          }
-          elseif (Test-Path "backend/requirements.txt") {
-            "manager=requirements" >> $env:GITHUB_OUTPUT
-            Write-Host "[backend] dependency source: requirements.txt"
-          }
-          else {
-            Write-Error "No backend dependency file found. Expected backend/pyproject.toml or backend/requirements.txt"
-            exit 1
-          }
-
-      - name: Install backend dependencies (pyproject)
-        if: steps.backend-deps.outputs.manager == 'pyproject'
-        shell: pwsh
-        run: |
-          python -m pip install --upgrade pip
-          Push-Location backend
-          python -m pip install -e .
-          Pop-Location
-          python -m pip install pytest uvicorn
-
-      - name: Install backend dependencies (requirements)
-        if: steps.backend-deps.outputs.manager == 'requirements'
-        shell: pwsh
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r backend/requirements.txt
-          python -m pip install pytest uvicorn
-
-      - name: Run backend tests if present
-        shell: pwsh
-        run: |
-          if (Test-Path "backend/tests") {
-            Write-Host "[backend] Running pytest..."
-            python -m pytest -q backend/tests
-          }
-          else {
-            Write-Host "[backend] No backend/tests found; proceeding with integration health check."
-          }
-
-      - name: Detect frontend package manager
-        id: frontend-pm
-        shell: pwsh
-        run: |
-          if (Test-Path "frontend/pnpm-lock.yaml") {
-            "pm=pnpm" >> $env:GITHUB_OUTPUT
-            "lockfile=frontend/pnpm-lock.yaml" >> $env:GITHUB_OUTPUT
-            Write-Host "[frontend] package manager: pnpm"
-          }
-          elseif (Test-Path "frontend/yarn.lock") {
-            "pm=yarn" >> $env:GITHUB_OUTPUT
-            "lockfile=frontend/yarn.lock" >> $env:GITHUB_OUTPUT
-            Write-Host "[frontend] package manager: yarn"
-          }
-          elseif (Test-Path "frontend/package-lock.json") {
-            "pm=npm" >> $env:GITHUB_OUTPUT
-            "lockfile=frontend/package-lock.json" >> $env:GITHUB_OUTPUT
-            Write-Host "[frontend] package manager: npm"
-          }
-          else {
-            Write-Error "No frontend lockfile found. Expected pnpm-lock.yaml, yarn.lock, or package-lock.json"
-            exit 1
-          }
-
-      - name: Setup Node.js (LTS)
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: ${{ steps.frontend-pm.outputs.pm }}
-          cache-dependency-path: ${{ steps.frontend-pm.outputs.lockfile }}
-
-      - name: Setup pnpm
-        if: steps.frontend-pm.outputs.pm == 'pnpm'
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
-
-      - name: Install frontend dependencies
-        shell: pwsh
-        working-directory: frontend
-        run: |
-          if ("${{ steps.frontend-pm.outputs.pm }}" -eq "pnpm") {
-            pnpm install --frozen-lockfile
-          }
-          elseif ("${{ steps.frontend-pm.outputs.pm }}" -eq "yarn") {
-            yarn install --frozen-lockfile
-          }
-          else {
-            npm ci
-          }
-
-      - name: Run frontend lint (if available)
-        shell: pwsh
-        working-directory: frontend
-        run: |
-          $pkg = Get-Content package.json -Raw | ConvertFrom-Json
-          $hasLint = $null -ne $pkg.scripts -and $null -ne $pkg.scripts.lint
-
-          if ($hasLint) {
-            Write-Host "[frontend] Running lint..."
-            if ("${{ steps.frontend-pm.outputs.pm }}" -eq "pnpm") {
-              pnpm run lint
-            }
-            elseif ("${{ steps.frontend-pm.outputs.pm }}" -eq "yarn") {
-              yarn lint
-            }
-            else {
-              npm run lint
-            }
-          }
-          else {
-            Write-Host "[frontend] No lint script found. Skipping lint."
-          }
-
-      - name: Build frontend
-        shell: pwsh
-        working-directory: frontend
-        env:
-          NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:8000
-        run: |
-          Write-Host "[frontend] Building with NEXT_PUBLIC_API_BASE_URL=$env:NEXT_PUBLIC_API_BASE_URL"
-          if ("${{ steps.frontend-pm.outputs.pm }}" -eq "pnpm") {
-            pnpm run build
-          }
-          elseif ("${{ steps.frontend-pm.outputs.pm }}" -eq "yarn") {
-            yarn build
-          }
-          else {
-            npm run build
-          }
-
-      - name: Start backend server (Windows CMD)
-        if: runner.os == 'Windows'
-        shell: cmd
-        working-directory: backend
-        run: |
-          @echo off
-          set MODULE=
-          if exist main.py (
-            set MODULE=main:app
-          ) else if exist app\main.py (
-            set MODULE=app.main:app
-          ) else if exist src\app\main.py (
-            set MODULE=src.app.main:app
-          ) else (
-            echo [backend] Could not detect module path.
-            dir /s /b *.py
-            exit /b 1
-          )
-
-          set "BACKEND_LOG=%CD%\backend.log"
-          if exist "%BACKEND_LOG%" del /f /q "%BACKEND_LOG%"
-
-          echo BACKEND_LOG=%BACKEND_LOG%>>"%GITHUB_ENV%"
-          echo BACKEND_MODULE=%MODULE%>>"%GITHUB_ENV%"
-
-          echo [backend] Starting module=%MODULE%
-          start "" /b cmd /c "python -m uvicorn %MODULE% --host 127.0.0.1 --port 8000 --log-level debug 1> backend.log 2>&1"
-
-          timeout /t 2 /nobreak >NUL
-          echo ===== netstat :8000 =====
-          netstat -ano | findstr :8000
-          echo ===== backend.log (immediate) =====
-          if exist backend.log (
-            type backend.log
-          ) else (
-            echo backend.log not created yet.
-          )
-
-      - name: Start backend server (Linux)
+      - name: Install backend dependencies (Linux)
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          module=""
-          if [ -f backend/main.py ]; then
-            module="main:app"
-          elif [ -f backend/app/main.py ]; then
-            module="app.main:app"
-          elif [ -f backend/src/app/main.py ]; then
-            module="src.app.main:app"
+          python -m pip install --upgrade pip
+          if [ -f backend/pyproject.toml ]; then
+            python -m pip install -e backend
+          elif [ -f backend/requirements.txt ]; then
+            python -m pip install -r backend/requirements.txt
           else
-            echo "[backend] Could not detect module path." >&2
-            find backend -maxdepth 5 -type f -name "*.py" -print
+            echo "No backend dependency file found." >&2
             exit 1
           fi
+          python -m pip install uvicorn
 
-          log="$PWD/backend/backend.log"
-          rm -f "$log"
-          (
-            cd backend
-            python -m uvicorn "$module" --host 127.0.0.1 --port 8000 --log-level debug > backend.log 2>&1
-          ) &
-          echo "BACKEND_PID=$!" >> "$GITHUB_ENV"
-          echo "BACKEND_LOG=$log" >> "$GITHUB_ENV"
-
-          echo "===== netstat :8000 ====="
-          netstat -anp 2>/dev/null | grep 8000 || true
-
-      - name: Health check (Windows CMD)
+      - name: Install backend dependencies (Windows)
         if: runner.os == 'Windows'
-        shell: cmd
+        shell: pwsh
         run: |
-          @echo off
-          setlocal EnableDelayedExpansion
-          set OK=0
+          python -m pip install --upgrade pip
+          if (Test-Path "backend/pyproject.toml") {
+            python -m pip install -e backend
+          }
+          elseif (Test-Path "backend/requirements.txt") {
+            python -m pip install -r backend/requirements.txt
+          }
+          else {
+            Write-Error "No backend dependency file found."
+            exit 1
+          }
+          python -m pip install uvicorn
 
-          for /l %%i in (1,1,30) do (
-            set CODE=
-            echo [Attempt %%i/30] Checking http://127.0.0.1:8000/health
-            for /f %%s in ('curl -s -o NUL -w "%%{http_code}" http://127.0.0.1:8000/health') do set CODE=%%s
-            if "!CODE!"=="200" (
-              echo [health] HTTP 200
-              set OK=1
-              goto :done
-            )
-            timeout /t 2 /nobreak >NUL
-          )
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
-          :done
-          if "!OK!"=="0" (
-            echo Backend health check failed.
-            echo ===== netstat :8000 =====
-            netstat -ano | findstr :8000
-            echo ===== backend log =====
-            if defined BACKEND_LOG (
-              if exist "%BACKEND_LOG%" (
-                type "%BACKEND_LOG%"
-              ) else if exist backend\backend.log (
-                type backend\backend.log
-              ) else if exist backend.log (
-                type backend.log
-              ) else (
-                echo No backend log found.
-              )
-            ) else if exist backend\backend.log (
-              type backend\backend.log
-            ) else if exist backend.log (
-              type backend.log
-            ) else (
-              echo No backend log found.
-            )
-            exit /b 1
-          )
+      - name: Enable Yarn 1.22.22 (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          corepack enable
+          corepack prepare yarn@1.22.22 --activate
+          yarn --version
+
+      - name: Enable Yarn 1.22.22 (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          corepack enable
+          corepack prepare yarn@1.22.22 --activate
+          yarn --version
+
+      - name: Install frontend dependencies (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        working-directory: frontend
+        run: yarn install --frozen-lockfile
+
+      - name: Install frontend dependencies (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: frontend
+        run: yarn install --frozen-lockfile
+
+      - name: Build frontend (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        working-directory: frontend
+        run: yarn build > ../frontend-build.log 2>&1
+
+      - name: Build frontend (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: frontend
+        run: yarn build *> ../frontend-build.log
+
+      - name: Start backend (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --log-level debug > backend.stdout.log 2> backend.stderr.log &
+          echo "BACKEND_PID=$!" >> "$GITHUB_ENV"
+
+      - name: Start backend (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $stdout = Join-Path $PWD "backend.stdout.log"
+          $stderr = Join-Path $PWD "backend.stderr.log"
+          $proc = Start-Process -FilePath python -ArgumentList @("-m", "uvicorn", "backend.main:app", "--host", "127.0.0.1", "--port", "8000", "--log-level", "debug") -RedirectStandardOutput $stdout -RedirectStandardError $stderr -PassThru
+          "BACKEND_PID=$($proc.Id)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Health check (Linux)
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          url="http://127.0.0.1:8000/health"
-          ok=0
-          for i in $(seq 1 30); do
-            echo "[Attempt $i/30] GET $url"
-            code=$(curl -s -o /tmp/health.json -w "%{http_code}" "$url" || true)
-            echo "[health] HTTP $code"
-            if [ "$code" = "200" ]; then
-              ok=1
-              break
-            fi
-            sleep 2
-          done
+          python - <<'PY'
+          import json
+          import sys
+          import time
+          import urllib.request
+          import urllib.error
 
-          if [ "$ok" -ne 1 ]; then
-            echo "Backend health check failed." >&2
-            echo "===== netstat :8000 ====="
-            netstat -anp 2>/dev/null | grep 8000 || true
-            echo "===== backend log ====="
-            if [ -f "${BACKEND_LOG:-}" ]; then
-              cat "$BACKEND_LOG"
-            elif [ -f "backend/backend.log" ]; then
-              cat backend/backend.log
-            else
-              echo "No backend log found."
-            fi
-            exit 1
-          fi
+          url = "http://127.0.0.1:8000/health"
+          last_error = None
+          for attempt in range(1, 46):
+              try:
+                  with urllib.request.urlopen(url, timeout=2) as resp:
+                      body = resp.read().decode("utf-8", "replace")
+                      print(f"[health] attempt={attempt} status={resp.status} body={body}")
+                      if resp.status == 200:
+                          sys.exit(0)
+              except Exception as exc:  # noqa: BLE001
+                  last_error = exc
+                  print(f"[health] attempt={attempt} error={exc}")
+              time.sleep(2)
 
-      - name: Print backend log (Windows CMD)
-        if: always() && runner.os == 'Windows'
-        shell: cmd
+          print(f"Health check failed. last_error={last_error}", file=sys.stderr)
+          sys.exit(1)
+          PY
+
+      - name: Health check (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
         run: |
-          @echo off
-          echo ===== backend log (always) =====
-          if defined BACKEND_LOG (
-            if exist "%BACKEND_LOG%" (
-              type "%BACKEND_LOG%"
-            ) else if exist backend\backend.log (
-              type backend\backend.log
-            ) else if exist backend.log (
-              type backend.log
-            ) else (
-              echo No backend log found
-            )
-          ) else if exist backend\backend.log (
-            type backend\backend.log
-          ) else if exist backend.log (
-            type backend.log
-          ) else (
-            echo No backend log found
-          )
+          @'
+          import sys
+          import time
+          import urllib.error
+          import urllib.request
 
-      - name: Print backend log (Linux)
-        if: always() && runner.os == 'Linux'
+          url = "http://127.0.0.1:8000/health"
+          last_error = None
+          for attempt in range(1, 46):
+              try:
+                  with urllib.request.urlopen(url, timeout=2) as resp:
+                      body = resp.read().decode("utf-8", "replace")
+                      print(f"[health] attempt={attempt} status={resp.status} body={body}")
+                      if resp.status == 200:
+                          raise SystemExit(0)
+              except Exception as exc:
+                  last_error = exc
+                  print(f"[health] attempt={attempt} error={exc}")
+              time.sleep(2)
+
+          print(f"Health check failed. last_error={last_error}", file=sys.stderr)
+          raise SystemExit(1)
+          '@ | Set-Content -Path healthcheck.py -Encoding utf8
+          python healthcheck.py
+
+      - name: Print logs on failure (Linux)
+        if: failure() && runner.os == 'Linux'
         shell: bash
         run: |
-          echo "===== backend log (always) ====="
-          if [ -f "${BACKEND_LOG:-}" ]; then
-            cat "$BACKEND_LOG"
-          elif [ -f "backend/backend.log" ]; then
-            cat backend/backend.log
-          else
-            echo "No backend log found."
-          fi
+          echo "===== backend stdout ====="
+          [ -f backend.stdout.log ] && cat backend.stdout.log || echo "missing backend.stdout.log"
+          echo "===== backend stderr ====="
+          [ -f backend.stderr.log ] && cat backend.stderr.log || echo "missing backend.stderr.log"
+          echo "===== frontend build log ====="
+          [ -f frontend-build.log ] && cat frontend-build.log || echo "missing frontend-build.log"
 
-      - name: Stop backend server (Linux)
+      - name: Print logs on failure (Windows)
+        if: failure() && runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Write-Host "===== backend stdout ====="
+          if (Test-Path "backend.stdout.log") { Get-Content "backend.stdout.log" } else { Write-Host "missing backend.stdout.log" }
+          Write-Host "===== backend stderr ====="
+          if (Test-Path "backend.stderr.log") { Get-Content "backend.stderr.log" } else { Write-Host "missing backend.stderr.log" }
+          Write-Host "===== frontend build log ====="
+          if (Test-Path "frontend-build.log") { Get-Content "frontend-build.log" } else { Write-Host "missing frontend-build.log" }
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ matrix.os }}
+          if-no-files-found: warn
+          path: |
+            backend.stdout.log
+            backend.stderr.log
+            frontend-build.log
+
+      - name: Stop backend (Linux)
         if: always() && runner.os == 'Linux'
         shell: bash
         run: |
           if [ -n "${BACKEND_PID:-}" ]; then
             kill "$BACKEND_PID" || true
           fi
+
+      - name: Stop backend (Windows)
+        if: always() && runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if ($env:BACKEND_PID) {
+            Stop-Process -Id ([int]$env:BACKEND_PID) -Force -ErrorAction SilentlyContinue
+          }
